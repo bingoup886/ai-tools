@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI工具排行榜</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 30px;
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        th {
+            background: #34495e;
+            color: white;
+            text-transform: uppercase;
+            font-size: 1.1em;
+            letter-spacing: 1px;
+        }
+        tr {
+            transition: all 0.3s ease;
+        }
+        tr:hover:not(:first-child) {
+            background: #f8f9fa;
+            transform: translateY(-2px);
+        }
+        [contenteditable="true"] {
+            outline: none;
+            min-width: 150px;
+        }
+        [contenteditable="true"]:focus {
+            background: #fff;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+            border-radius: 5px;
+        }
+        .button-group {
+            text-align: center;
+        }
+        button {
+            padding: 12px 30px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .save-btn {
+            background: #2ecc71;
+            color: white;
+        }
+        .add-btn {
+            background: #3498db;
+            color: white;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AI工具排行榜</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>AI应用方向</th>
+                    <th>第一名</th>
+                    <th>第二名</th>
+                    <th>第三名</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <tr>
+                    <td contenteditable="true">AI绘画</td>
+                    <td contenteditable="true">Midjourney</td>
+                    <td contenteditable="true">Stable Diffusion</td>
+                    <td contenteditable="true">DALL-E</td>
+                </tr>
+                <tr>
+                    <td contenteditable="true">AI画架构图</td>
+                    <td contenteditable="true">Diagrams.net</td>
+                    <td contenteditable="true">Lucidchart</td>
+                    <td contenteditable="true">Draw.io</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="button-group">
+            <button class="add-btn" onclick="addRow()">添加新行</button>
+            <button class="save-btn" onclick="saveData()">保存数据</button>
+        </div>
+    </div>
+
+    <script>
+        // 加载时从本地存储读取数据
+        window.onload = function() {
+            const savedData = localStorage.getItem('aiToolsTable');
+            if (savedData) {
+                document.getElementById('tableBody').innerHTML = savedData;
+            }
+        }
+
+        // 保存数据到本地存储
+        function saveData() {
+            const tableBody = document.getElementById('tableBody').innerHTML;
+            localStorage.setItem('aiToolsTable', tableBody);
+            alert('数据已保存成功！');
+        }
+
+        // 添加新行
+        function addRow() {
+            const tbody = document.getElementById('tableBody');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td contenteditable="true">新应用方向</td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+            `;
+            tbody.appendChild(newRow);
+        }
+    </script>
+</body>
+</html>
