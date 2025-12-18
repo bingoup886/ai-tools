@@ -3,14 +3,13 @@ node_modules/
 package-lock.json
 yarn.lock
 
-# Wrangler
+# Cloudflare
 .wrangler/
-wrangler.toml.backup
+.dev.vars
 
 # Environment variables
 .env
 .env.local
-.dev.vars
 
 # IDE
 .vscode/
@@ -32,3 +31,4 @@ yarn-error.log*
 # Build
 dist/
 build/
+public/

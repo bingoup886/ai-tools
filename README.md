@@ -32,7 +32,7 @@
    - 获得网址：`https://your-project.pages.dev`
    - 每次 `git push` 后自动部署
 
-详细步骤请查看 [GITHUB_DEPLOY.md](./GITHUB_DEPLOY.md)
+详细步骤请查看 [PAGES_KV_SETUP.md](./PAGES_KV_SETUP.md)
 
 ### 方式二：本地运行
 
@@ -108,11 +108,14 @@ http://localhost:8000
 
 ```
 ai-tools/
-├── index.html          # 主页面（包含所有前端代码）
-├── worker.js           # Cloudflare Workers 后端 API
-├── wrangler.toml       # Cloudflare Workers 配置文件
-├── DEPLOYMENT.md       # 详细部署文档
-└── README.md           # 项目说明（本文件）
+├── index.html              # 主页面（前端）
+├── functions/              # Cloudflare Pages Functions
+│   └── api/
+│       └── data.js         # 数据 API
+├── _routes.json            # 路由配置
+├── PAGES_KV_SETUP.md       # KV 存储配置指南
+├── DEPLOYMENT.md           # 手动部署文档（备选）
+└── README.md               # 项目说明（本文件）
 ```
 
 ## 🎨 自定义
