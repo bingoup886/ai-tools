@@ -1,8 +1,10 @@
 // Cloudflare Workers 后端代码
 // 用于存储和管理工具导航站的数据
 
+import {getAssetFromKV} from '@cloudflare/kv-asset-handler';
+
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const path = url.pathname;
 
@@ -118,11 +120,25 @@ export default {
         });
       }
 
-      // 404
-      return new Response('Not Found', {
-        status: 404,
-        headers: corsHeaders
-      });
+      // 如果不是 API 请求，尝试返回静态文件
+      try {
+        return await getAssetFromKV(
+          {
+            request,
+            waitUntil: ctx.waitUntil.bind(ctx),
+          },
+          {
+            ASSET_NAMESPACE: env.__STATIC_CONTENT,
+            ASSET_MANIFEST: JSON.parse(__STATIC_CONTENT_MANIFEST),
+          }
+        );
+      } catch (e) {
+        // 如果静态文件不存在，返回 404
+        return new Response('Not Found', {
+          status: 404,
+          headers: corsHeaders
+        });
+      }
 
     } catch (error) {
       return new Response(JSON.stringify({ error: error.message }), {
