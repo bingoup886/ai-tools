@@ -17,7 +17,24 @@
 
 ## 🎬 快速开始
 
-### 本地运行
+### 方式一：GitHub 自动部署（推荐）
+
+1. **Fork 或 Clone 本项目到你的 GitHub**
+
+2. **连接到 Cloudflare Pages**
+   - 访问：https://dash.cloudflare.com/
+   - 进入 `Workers & Pages` → `Create application` → `Pages`
+   - 点击 `Connect to Git`
+   - 选择你的 GitHub 仓库
+   - 点击 `Save and Deploy`
+
+3. **完成！**
+   - 获得网址：`https://your-project.pages.dev`
+   - 每次 `git push` 后自动部署
+
+详细步骤请查看 [GITHUB_DEPLOY.md](./GITHUB_DEPLOY.md)
+
+### 方式二：本地运行
 
 1. **克隆项目**
 ```bash
@@ -45,13 +62,13 @@ npx http-server -p 8000
 http://localhost:8000
 ```
 
-### 部署到 Cloudflare
+### 方式三：手动部署
 
 详细部署步骤请查看 [DEPLOYMENT.md](./DEPLOYMENT.md)
 
 **最简单的方式**：
 1. 登录 [Cloudflare Dashboard](https://dash.cloudflare.com/)
-2. 进入 Pages
+2. 进入 Pages → Upload assets
 3. 上传 `index.html`
 4. 完成！
 
