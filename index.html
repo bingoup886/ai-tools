@@ -542,14 +542,12 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <script>
-        // 配置
         const CONFIG = {
-            PASSWORD_HASH: 'bfc0fcc6482fefc3674a60bf198c91df', // milingmiling888 的 MD5
-            API_ENDPOINT: '/api', // Pages Functions API 端点（同域名）
-            USE_LOCAL_STORAGE: false // 使用 Cloudflare KV 存储
+            PASSWORD_HASH: 'dde6ecd6406700aa000b213c843a3091',
+            API_ENDPOINT: '/api',
+            USE_LOCAL_STORAGE: false
         };
 
-        // 状态管理
         let isEditMode = false;
         let currentCategoryId = null;
         let data = {
