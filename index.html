@@ -118,6 +118,21 @@
             border-radius: 12px;
             margin-bottom: 18px;
             box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .category-section.draggable {
+            cursor: move;
+        }
+
+        .category-section.dragging {
+            opacity: 0.5;
+            transform: scale(0.98);
+        }
+
+        .category-section.drag-over {
+            border: 2px dashed #667eea;
+            transform: translateY(-5px);
         }
 
         .category-header {
@@ -191,6 +206,20 @@
             display: flex;
             align-items: center;
             gap: 0;
+            transition: transform 0.2s ease;
+        }
+
+        .tool-card-wrapper.draggable {
+            cursor: move;
+        }
+
+        .tool-card-wrapper.dragging {
+            opacity: 0.5;
+            transform: scale(0.95);
+        }
+
+        .tool-card-wrapper.drag-over {
+            transform: translateX(10px);
         }
 
         .tool-card {
@@ -589,7 +618,7 @@
             }
 
             emptyState.style.display = 'none';
-            container.innerHTML = data.categories.map(category => {
+            container.innerHTML = data.categories.map((category, catIndex) => {
                 const sortedTools = [...category.tools].sort((a, b) => {
                     const scoreA = (a.upvotes || 0) - (a.downvotes || 0);
                     const scoreB = (b.upvotes || 0) - (b.downvotes || 0);
@@ -597,7 +626,9 @@
                 });
 
                 return `
-                    <div class="category-section">
+                    <div class="category-section ${isEditMode ? 'draggable' : ''}"
+                         data-category-id="${category.id}"
+                         ${isEditMode ? `draggable="true"` : ''}>
                         <div class="category-header">
                             <div class="category-title">
                                 <span class="category-name ${isEditMode ? 'editable' : ''}"
@@ -612,19 +643,27 @@
                                 ` : ''}
                             </div>
                         </div>
-                        <div class="tools-grid">
+                        <div class="tools-grid" data-category-id="${category.id}">
                             ${sortedTools.map((tool, index) => renderToolCard(tool, index + 1, category.id)).join('')}
                         </div>
                     </div>
                 `;
             }).join('');
+
+            // 添加拖拽事件监听
+            if (isEditMode) {
+                initDragAndDrop();
+            }
         }
 
         // 渲染工具卡片
         function renderToolCard(tool, rank, categoryId) {
             const userVote = getUserVote(tool.id);
             return `
-                <div class="tool-card-wrapper">
+                <div class="tool-card-wrapper ${isEditMode ? 'draggable' : ''}"
+                     data-tool-id="${tool.id}"
+                     data-category-id="${categoryId}"
+                     ${isEditMode ? `draggable="true"` : ''}>
                     <div class="tool-card">
                         <div class="tool-rank">${rank}</div>
                         <div class="tool-name">
@@ -960,6 +999,152 @@
             category.tools = category.tools.filter(t => t.id !== toolId);
             saveData();
             renderCategories();
+        }
+
+        // 拖拽功能
+        let draggedElement = null;
+        let draggedType = null; // 'category' or 'tool'
+        let draggedCategoryId = null;
+        let draggedToolId = null;
+
+        function initDragAndDrop() {
+            // 分类拖拽
+            const categories = document.querySelectorAll('.category-section.draggable');
+            categories.forEach(category => {
+                category.addEventListener('dragstart', handleCategoryDragStart);
+                category.addEventListener('dragend', handleCategoryDragEnd);
+                category.addEventListener('dragover', handleCategoryDragOver);
+                category.addEventListener('drop', handleCategoryDrop);
+                category.addEventListener('dragleave', handleCategoryDragLeave);
+            });
+
+            // 工具拖拽
+            const tools = document.querySelectorAll('.tool-card-wrapper.draggable');
+            tools.forEach(tool => {
+                tool.addEventListener('dragstart', handleToolDragStart);
+                tool.addEventListener('dragend', handleToolDragEnd);
+                tool.addEventListener('dragover', handleToolDragOver);
+                tool.addEventListener('drop', handleToolDrop);
+                tool.addEventListener('dragleave', handleToolDragLeave);
+            });
+        }
+
+        // 分类拖拽处理
+        function handleCategoryDragStart(e) {
+            draggedElement = this;
+            draggedType = 'category';
+            draggedCategoryId = this.dataset.categoryId;
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleCategoryDragEnd(e) {
+            this.classList.remove('dragging');
+            document.querySelectorAll('.category-section').forEach(cat => {
+                cat.classList.remove('drag-over');
+            });
+        }
+
+        function handleCategoryDragOver(e) {
+            if (draggedType !== 'category') return;
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+
+            if (this !== draggedElement) {
+                this.classList.add('drag-over');
+            }
+        }
+
+        function handleCategoryDragLeave(e) {
+            if (e.target === this) {
+                this.classList.remove('drag-over');
+            }
+        }
+
+        function handleCategoryDrop(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            if (draggedType !== 'category' || this === draggedElement) return;
+
+            this.classList.remove('drag-over');
+
+            const draggedIndex = data.categories.findIndex(c => c.id === draggedCategoryId);
+            const targetIndex = data.categories.findIndex(c => c.id === this.dataset.categoryId);
+
+            if (draggedIndex !== -1 && targetIndex !== -1) {
+                // 移动分类
+                const [removed] = data.categories.splice(draggedIndex, 1);
+                data.categories.splice(targetIndex, 0, removed);
+
+                saveData();
+                renderCategories();
+            }
+        }
+
+        // 工具拖拽处理
+        function handleToolDragStart(e) {
+            draggedElement = this;
+            draggedType = 'tool';
+            draggedCategoryId = this.dataset.categoryId;
+            draggedToolId = this.dataset.toolId;
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.stopPropagation();
+        }
+
+        function handleToolDragEnd(e) {
+            this.classList.remove('dragging');
+            document.querySelectorAll('.tool-card-wrapper').forEach(tool => {
+                tool.classList.remove('drag-over');
+            });
+        }
+
+        function handleToolDragOver(e) {
+            if (draggedType !== 'tool') return;
+
+            // 只允许同一分类内拖拽
+            if (this.dataset.categoryId !== draggedCategoryId) return;
+
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+
+            if (this !== draggedElement) {
+                this.classList.add('drag-over');
+            }
+        }
+
+        function handleToolDragLeave(e) {
+            if (e.target === this || this.contains(e.target)) {
+                this.classList.remove('drag-over');
+            }
+        }
+
+        function handleToolDrop(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            if (draggedType !== 'tool' || this === draggedElement) return;
+
+            // 只允许同一分类内拖拽
+            if (this.dataset.categoryId !== draggedCategoryId) return;
+
+            this.classList.remove('drag-over');
+
+            const category = data.categories.find(c => c.id === draggedCategoryId);
+            if (!category) return;
+
+            const draggedIndex = category.tools.findIndex(t => t.id === draggedToolId);
+            const targetIndex = category.tools.findIndex(t => t.id === this.dataset.toolId);
+
+            if (draggedIndex !== -1 && targetIndex !== -1) {
+                // 移动工具
+                const [removed] = category.tools.splice(draggedIndex, 1);
+                category.tools.splice(targetIndex, 0, removed);
+
+                saveData();
+                renderCategories();
+            }
         }
 
         // 页面加载时初始化
