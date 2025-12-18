@@ -1,0 +1,22 @@
+name = "geek-tools-navigator"
+main = "worker.js"
+compatibility_date = "2024-01-01"
+
+# KV 命名空间配置
+# 部署前需要先创建 KV 命名空间
+# 运行: wrangler kv:namespace create "GEEK_TOOLS_KV"
+# 然后将返回的 id 填入下面的配置
+
+[[kv_namespaces]]
+binding = "GEEK_TOOLS_KV"
+id = "YOUR_KV_NAMESPACE_ID"  # 替换为实际的 KV namespace ID
+
+# 路由配置（可选）
+# routes = [
+#   { pattern = "tools.yourdomain.com/*", zone_name = "yourdomain.com" }
+# ]
+
+# Workers 站点配置（如果要托管静态文件）
+# [site]
+# bucket = "./public"
+
