@@ -133,6 +133,46 @@
             font-size: 1.2em;
             color: #2c3e50;
             font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .category-name {
+            cursor: default;
+        }
+
+        .category-name.editable {
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: background 0.2s ease;
+        }
+
+        .category-name.editable:hover {
+            background: #f0f0f0;
+        }
+
+        .category-name-input {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #2c3e50;
+            border: 2px solid #667eea;
+            border-radius: 5px;
+            padding: 5px 10px;
+            outline: none;
+        }
+
+        .edit-icon {
+            color: #667eea;
+            font-size: 0.9em;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .category-title:hover .edit-icon {
+            opacity: 1;
         }
 
         .category-actions {
@@ -356,6 +396,30 @@
             font-weight: bold;
         }
 
+        .edit-tool-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #667eea;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85em;
+            transition: all 0.2s ease;
+            z-index: 2;
+        }
+
+        .edit-tool-btn:hover {
+            background: #5568d3;
+            transform: scale(1.1);
+        }
+
         .empty-state {
             text-align: center;
             padding: 30px;
@@ -535,7 +599,12 @@
                 return `
                     <div class="category-section">
                         <div class="category-header">
-                            <div class="category-title">${category.name}</div>
+                            <div class="category-title">
+                                <span class="category-name ${isEditMode ? 'editable' : ''}"
+                                      onclick="${isEditMode ? `editCategoryName('${category.id}', this)` : ''}"
+                                      data-category-id="${category.id}">${category.name}</span>
+                                ${isEditMode ? '<span class="edit-icon">✏️</span>' : ''}
+                            </div>
                             <div class="category-actions">
                                 ${isEditMode ? `
                                     <button class="btn btn-primary btn-small" onclick="showAddToolModal('${category.id}')">➕ 添加工具</button>
@@ -566,6 +635,11 @@
                                     onclick="deleteTool('${categoryId}', '${tool.id}')"
                                     style="position: absolute; top: 8px; left: 8px; z-index: 3;">
                                 ×
+                            </button>
+                            <button class="edit-tool-btn"
+                                    onclick="showEditToolModal('${categoryId}', '${tool.id}')"
+                                    title="编辑工具">
+                                ✏️
                             </button>
                         ` : ''}
                     </div>
@@ -720,6 +794,50 @@
             closeAddCategoryModal();
         }
 
+        // 编辑分类名称
+        function editCategoryName(categoryId, element) {
+            const category = data.categories.find(c => c.id === categoryId);
+            if (!category) return;
+
+            const currentName = category.name;
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = currentName;
+            input.className = 'category-name-input';
+
+            // 替换元素
+            element.replaceWith(input);
+            input.focus();
+            input.select();
+
+            // 保存函数
+            const saveName = () => {
+                const newName = input.value.trim();
+                if (newName && newName !== currentName) {
+                    category.name = newName;
+                    saveData();
+                }
+                renderCategories();
+            };
+
+            // 回车保存
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    saveName();
+                }
+            });
+
+            // 失去焦点保存
+            input.addEventListener('blur', saveName);
+
+            // ESC 取消
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    renderCategories();
+                }
+            });
+        }
+
         // 删除分类
         function deleteCategory(categoryId) {
             if (!confirm('确定要删除这个分类吗？')) return;
@@ -732,6 +850,16 @@
         // 添加工具
         function showAddToolModal(categoryId) {
             currentCategoryId = categoryId;
+            currentEditToolId = null;
+
+            // 重置表单
+            document.getElementById('toolNameInput').value = '';
+            document.getElementById('toolUrlInput').value = '';
+
+            // 设置为添加模式
+            document.querySelector('#addToolModal .modal-header').textContent = '添加新工具';
+            document.querySelector('#addToolModal .btn-success').textContent = '添加';
+
             document.getElementById('addToolModal').classList.add('show');
         }
 
@@ -740,9 +868,16 @@
             document.getElementById('toolNameInput').value = '';
             document.getElementById('toolUrlInput').value = '';
             currentCategoryId = null;
+            currentEditToolId = null;
         }
 
         function addTool() {
+            // 如果是编辑模式，调用更新函数
+            if (currentEditToolId) {
+                updateTool();
+                return;
+            }
+
             const name = document.getElementById('toolNameInput').value.trim();
             const url = document.getElementById('toolUrlInput').value.trim();
 
@@ -763,6 +898,53 @@
             };
 
             category.tools.push(newTool);
+            saveData();
+            renderCategories();
+            closeAddToolModal();
+        }
+
+        // 编辑工具
+        let currentEditToolId = null;
+
+        function showEditToolModal(categoryId, toolId) {
+            currentCategoryId = categoryId;
+            currentEditToolId = toolId;
+
+            const category = data.categories.find(c => c.id === categoryId);
+            if (!category) return;
+
+            const tool = category.tools.find(t => t.id === toolId);
+            if (!tool) return;
+
+            // 填充当前值
+            document.getElementById('toolNameInput').value = tool.name;
+            document.getElementById('toolUrlInput').value = tool.url;
+
+            // 修改模态框标题和按钮文字
+            document.querySelector('#addToolModal .modal-header').textContent = '编辑工具';
+            document.querySelector('#addToolModal .btn-success').textContent = '保存';
+
+            document.getElementById('addToolModal').classList.add('show');
+        }
+
+        function updateTool() {
+            const name = document.getElementById('toolNameInput').value.trim();
+            const url = document.getElementById('toolUrlInput').value.trim();
+
+            if (!name || !url) {
+                alert('请填写完整信息');
+                return;
+            }
+
+            const category = data.categories.find(c => c.id === currentCategoryId);
+            if (!category) return;
+
+            const tool = category.tools.find(t => t.id === currentEditToolId);
+            if (!tool) return;
+
+            tool.name = name;
+            tool.url = url;
+
             saveData();
             renderCategories();
             closeAddToolModal();
