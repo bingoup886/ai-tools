@@ -591,6 +591,7 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <script>
         const CONFIG = {
             PASSWORD_HASH: 'dde6ecd6406700aa000b213c843a3091',
@@ -675,8 +676,7 @@
 
                 return `
                     <div class="category-section ${isEditMode ? 'draggable' : ''}"
-                         data-category-id="${category.id}"
-                         ${isEditMode ? `draggable="true"` : ''}>
+                         data-category-id="${category.id}">
                         <div class="category-header">
                             <div class="category-title">
                                 <span class="category-name ${isEditMode ? 'editable' : ''}"
@@ -711,8 +711,7 @@
             return `
                 <div class="tool-card-wrapper ${isEditMode ? 'draggable' : ''}"
                      data-tool-id="${tool.id}"
-                     data-category-id="${categoryId}"
-                     ${isEditMode ? `draggable="true"` : ''}>
+                     data-category-id="${categoryId}">
                     ${description ? `<div class="tool-description">${description}</div>` : ''}
                     <div class="tool-card">
                         <div class="tool-rank">${rank}</div>
@@ -1058,119 +1057,66 @@
             renderCategories();
         }
 
-        let draggedElement = null;
-        let draggedType = null;
-        let draggedCategoryId = null;
-        let draggedToolId = null;
-        let lastSwapTarget = null;
+        let categorySortable = null;
+        let toolSortables = [];
 
         function initDragAndDrop() {
-            const categories = document.querySelectorAll('.category-section.draggable');
-            categories.forEach(category => {
-                category.addEventListener('dragstart', handleCategoryDragStart);
-                category.addEventListener('dragend', handleCategoryDragEnd);
-                category.addEventListener('dragover', handleCategoryDragOver);
-                category.addEventListener('dragenter', handleCategoryDragEnter);
-            });
+            toolSortables.forEach(sortable => sortable && sortable.destroy());
+            toolSortables = [];
 
-            const tools = document.querySelectorAll('.tool-card-wrapper.draggable');
-            tools.forEach(tool => {
-                tool.addEventListener('dragstart', handleToolDragStart);
-                tool.addEventListener('dragend', handleToolDragEnd);
-                tool.addEventListener('dragover', handleToolDragOver);
-                tool.addEventListener('dragenter', handleToolDragEnter);
-            });
-        }
-
-        function handleCategoryDragStart(e) {
-            draggedElement = this;
-            draggedType = 'category';
-            draggedCategoryId = this.dataset.categoryId;
-            this.classList.add('dragging');
-            e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('text/html', this.innerHTML);
-        }
-
-        function handleCategoryDragEnd(e) {
-            this.classList.remove('dragging');
-            document.querySelectorAll('.category-section').forEach(cat => {
-                cat.classList.remove('drag-over');
-            });
-            lastSwapTarget = null;
-            saveData();
-        }
-
-        function handleCategoryDragEnter(e) {
-            if (draggedType !== 'category' || this === draggedElement) return;
-            e.preventDefault();
-
-            if (lastSwapTarget === this) return;
-            lastSwapTarget = this;
-
-            const draggedIndex = data.categories.findIndex(c => c.id === draggedCategoryId);
-            const targetIndex = data.categories.findIndex(c => c.id === this.dataset.categoryId);
-
-            if (draggedIndex !== -1 && targetIndex !== -1 && draggedIndex !== targetIndex) {
-                const [removed] = data.categories.splice(draggedIndex, 1);
-                data.categories.splice(targetIndex, 0, removed);
-                renderCategories();
+            if (categorySortable) {
+                categorySortable.destroy();
             }
-        }
 
-        function handleCategoryDragOver(e) {
-            if (draggedType !== 'category') return;
-            e.preventDefault();
-            e.dataTransfer.dropEffect = 'move';
-        }
+            const container = document.getElementById('categoriesContainer');
+            if (!container) return;
 
-        function handleToolDragStart(e) {
-            draggedElement = this;
-            draggedType = 'tool';
-            draggedCategoryId = this.dataset.categoryId;
-            draggedToolId = this.dataset.toolId;
-            this.classList.add('dragging');
-            e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('text/html', this.innerHTML);
-            e.stopPropagation();
-        }
+            categorySortable = new Sortable(container, {
+                animation: 200,
+                handle: '.category-header',
+                ghostClass: 'dragging',
+                chosenClass: 'drag-over',
+                dragClass: 'dragging',
+                forceFallback: true,
+                fallbackTolerance: 3,
+                onEnd: function(evt) {
+                    const oldIndex = evt.oldIndex;
+                    const newIndex = evt.newIndex;
 
-        function handleToolDragEnd(e) {
-            this.classList.remove('dragging');
-            document.querySelectorAll('.tool-card-wrapper').forEach(tool => {
-                tool.classList.remove('drag-over');
+                    if (oldIndex !== newIndex) {
+                        const [removed] = data.categories.splice(oldIndex, 1);
+                        data.categories.splice(newIndex, 0, removed);
+                        saveData();
+                    }
+                }
             });
-            lastSwapTarget = null;
-            saveData();
-        }
 
-        function handleToolDragEnter(e) {
-            if (draggedType !== 'tool' || this === draggedElement) return;
-            if (this.dataset.categoryId !== draggedCategoryId) return;
+            const toolsGrids = document.querySelectorAll('.tools-grid');
+            toolsGrids.forEach(grid => {
+                const categoryId = grid.dataset.categoryId;
+                const sortable = new Sortable(grid, {
+                    animation: 200,
+                    ghostClass: 'dragging',
+                    chosenClass: 'drag-over',
+                    dragClass: 'dragging',
+                    forceFallback: true,
+                    fallbackTolerance: 3,
+                    onEnd: function(evt) {
+                        const oldIndex = evt.oldIndex;
+                        const newIndex = evt.newIndex;
 
-            e.preventDefault();
-
-            if (lastSwapTarget === this) return;
-            lastSwapTarget = this;
-
-            const category = data.categories.find(c => c.id === draggedCategoryId);
-            if (!category) return;
-
-            const draggedIndex = category.tools.findIndex(t => t.id === draggedToolId);
-            const targetIndex = category.tools.findIndex(t => t.id === this.dataset.toolId);
-
-            if (draggedIndex !== -1 && targetIndex !== -1 && draggedIndex !== targetIndex) {
-                const [removed] = category.tools.splice(draggedIndex, 1);
-                category.tools.splice(targetIndex, 0, removed);
-                renderCategories();
-            }
-        }
-
-        function handleToolDragOver(e) {
-            if (draggedType !== 'tool') return;
-            if (this.dataset.categoryId !== draggedCategoryId) return;
-
-            e.preventDefault();
-            e.dataTransfer.dropEffect = 'move';
+                        if (oldIndex !== newIndex) {
+                            const category = data.categories.find(c => c.id === categoryId);
+                            if (category) {
+                                const [removed] = category.tools.splice(oldIndex, 1);
+                                category.tools.splice(newIndex, 0, removed);
+                                saveData();
+                            }
+                        }
+                    }
+                });
+                toolSortables.push(sortable);
+            });
         }
 
         // 页面加载时初始化
