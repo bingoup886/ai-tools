@@ -618,40 +618,28 @@
                 if (savedData) {
                     data = JSON.parse(savedData);
                 } else {
-                    // 初始化空数据
                     data = {
                         categories: []
                     };
                     saveData();
                 }
             } else {
-                // 从 Cloudflare Workers 加载
                 try {
-                    const response = await fetch(`${CONFIG.API_ENDPOINT}/data`);
+                    const response = await fetch(`${CONFIG.API_ENDPOINT}/categories`);
                     if (response.ok) {
                         data = await response.json();
                     }
                 } catch (error) {
                     console.error('加载数据失败:', error);
+                    data = { categories: [] };
                 }
             }
         }
 
-        // 保存数据
+        // 保存数据（D1 模式下不需要，每个操作直接调用对应 API）
         async function saveData() {
             if (CONFIG.USE_LOCAL_STORAGE) {
                 localStorage.setItem('geekToolsData', JSON.stringify(data));
-            } else {
-                // 保存到 Cloudflare Workers
-                try {
-                    await fetch(`${CONFIG.API_ENDPOINT}/data`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(data)
-                    });
-                } catch (error) {
-                    console.error('保存数据失败:', error);
-                }
             }
         }
 
@@ -1079,14 +1067,27 @@
                 dragClass: 'dragging',
                 forceFallback: true,
                 fallbackTolerance: 3,
-                onEnd: function(evt) {
+                onEnd: async function(evt) {
                     const oldIndex = evt.oldIndex;
                     const newIndex = evt.newIndex;
 
                     if (oldIndex !== newIndex) {
                         const [removed] = data.categories.splice(oldIndex, 1);
                         data.categories.splice(newIndex, 0, removed);
-                        saveData();
+
+                        if (!CONFIG.USE_LOCAL_STORAGE) {
+                            const categoryIds = data.categories.map(c => c.id);
+                            await fetch(`${CONFIG.API_ENDPOINT}/sort`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    type: 'categories',
+                                    items: categoryIds
+                                })
+                            });
+                        } else {
+                            saveData();
+                        }
                     }
                 }
             });
@@ -1101,7 +1102,7 @@
                     dragClass: 'dragging',
                     forceFallback: true,
                     fallbackTolerance: 3,
-                    onEnd: function(evt) {
+                    onEnd: async function(evt) {
                         const oldIndex = evt.oldIndex;
                         const newIndex = evt.newIndex;
 
@@ -1110,7 +1111,21 @@
                             if (category) {
                                 const [removed] = category.tools.splice(oldIndex, 1);
                                 category.tools.splice(newIndex, 0, removed);
-                                saveData();
+
+                                if (!CONFIG.USE_LOCAL_STORAGE) {
+                                    const toolIds = category.tools.map(t => t.id);
+                                    await fetch(`${CONFIG.API_ENDPOINT}/sort`, {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({
+                                            type: 'tools',
+                                            category_id: categoryId,
+                                            items: toolIds
+                                        })
+                                    });
+                                } else {
+                                    saveData();
+                                }
                             }
                         }
                     }
