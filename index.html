@@ -242,6 +242,44 @@
             border-color: #667eea;
         }
 
+        .tool-description {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-10px);
+            background: rgba(44, 62, 80, 0.95);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            line-height: 1.5;
+            white-space: normal;
+            max-width: 300px;
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            pointer-events: none;
+        }
+
+        .tool-description::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: rgba(44, 62, 80, 0.95);
+        }
+
+        .tool-card-wrapper:hover .tool-description {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(-5px);
+        }
+
         .tool-rank {
             position: absolute;
             top: -8px;
@@ -376,16 +414,24 @@
             font-size: 0.95em;
         }
 
-        .form-group input {
+        .form-group input,
+        .form-group textarea {
             width: 100%;
             padding: 10px;
             border: 2px solid #e0e0e0;
             border-radius: 6px;
             font-size: 0.95em;
             transition: border-color 0.3s ease;
+            font-family: inherit;
         }
 
-        .form-group input:focus {
+        .form-group textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
             outline: none;
             border-color: #667eea;
         }
@@ -533,6 +579,10 @@
                 <label>工具网址：</label>
                 <input type="text" id="toolUrlInput" placeholder="例如：https://notion.so">
             </div>
+            <div class="form-group">
+                <label>工具描述：</label>
+                <textarea id="toolDescInput" placeholder="简单描述这个工具的功能和特点" rows="3"></textarea>
+            </div>
             <div class="modal-actions">
                 <button class="btn btn-danger" onclick="closeAddToolModal()">取消</button>
                 <button class="btn btn-success" onclick="addTool()">添加</button>
@@ -657,11 +707,13 @@
         // 渲染工具卡片
         function renderToolCard(tool, rank, categoryId) {
             const userVote = getUserVote(tool.id);
+            const description = tool.description || '';
             return `
                 <div class="tool-card-wrapper ${isEditMode ? 'draggable' : ''}"
                      data-tool-id="${tool.id}"
                      data-category-id="${categoryId}"
                      ${isEditMode ? `draggable="true"` : ''}>
+                    ${description ? `<div class="tool-description">${description}</div>` : ''}
                     <div class="tool-card">
                         <div class="tool-rank">${rank}</div>
                         <div class="tool-name">
@@ -892,6 +944,7 @@
             // 重置表单
             document.getElementById('toolNameInput').value = '';
             document.getElementById('toolUrlInput').value = '';
+            document.getElementById('toolDescInput').value = '';
 
             // 设置为添加模式
             document.querySelector('#addToolModal .modal-header').textContent = '添加新工具';
@@ -904,6 +957,7 @@
             document.getElementById('addToolModal').classList.remove('show');
             document.getElementById('toolNameInput').value = '';
             document.getElementById('toolUrlInput').value = '';
+            document.getElementById('toolDescInput').value = '';
             currentCategoryId = null;
             currentEditToolId = null;
         }
@@ -917,6 +971,7 @@
 
             const name = document.getElementById('toolNameInput').value.trim();
             const url = document.getElementById('toolUrlInput').value.trim();
+            const description = document.getElementById('toolDescInput').value.trim();
 
             if (!name || !url) {
                 alert('请填写完整信息');
@@ -930,6 +985,7 @@
                 id: `${currentCategoryId}-${Date.now()}`,
                 name: name,
                 url: url,
+                description: description,
                 upvotes: 0,
                 downvotes: 0
             };
@@ -956,6 +1012,7 @@
             // 填充当前值
             document.getElementById('toolNameInput').value = tool.name;
             document.getElementById('toolUrlInput').value = tool.url;
+            document.getElementById('toolDescInput').value = tool.description || '';
 
             // 修改模态框标题和按钮文字
             document.querySelector('#addToolModal .modal-header').textContent = '编辑工具';
@@ -967,6 +1024,7 @@
         function updateTool() {
             const name = document.getElementById('toolNameInput').value.trim();
             const url = document.getElementById('toolUrlInput').value.trim();
+            const description = document.getElementById('toolDescInput').value.trim();
 
             if (!name || !url) {
                 alert('请填写完整信息');
@@ -981,6 +1039,7 @@
 
             tool.name = name;
             tool.url = url;
+            tool.description = description;
 
             saveData();
             renderCategories();
