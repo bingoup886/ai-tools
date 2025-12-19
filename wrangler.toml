@@ -1,0 +1,12 @@
+name = "geek-tools"
+compatibility_date = "2024-01-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "geek-tools-db"
+database_id = "a44c0773-30d7-4667-b19d-5c506d957fbb"
+
+[[kv_namespaces]]
+binding = "GEEK_TOOLS_KV"
+id = "e6d3cbcfc50c45279f98ac499663669b"
+
