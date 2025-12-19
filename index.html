@@ -1058,41 +1058,37 @@
             renderCategories();
         }
 
-        // 拖拽功能
         let draggedElement = null;
-        let draggedType = null; // 'category' or 'tool'
+        let draggedType = null;
         let draggedCategoryId = null;
         let draggedToolId = null;
+        let lastSwapTarget = null;
 
         function initDragAndDrop() {
-            // 分类拖拽
             const categories = document.querySelectorAll('.category-section.draggable');
             categories.forEach(category => {
                 category.addEventListener('dragstart', handleCategoryDragStart);
                 category.addEventListener('dragend', handleCategoryDragEnd);
                 category.addEventListener('dragover', handleCategoryDragOver);
-                category.addEventListener('drop', handleCategoryDrop);
-                category.addEventListener('dragleave', handleCategoryDragLeave);
+                category.addEventListener('dragenter', handleCategoryDragEnter);
             });
 
-            // 工具拖拽
             const tools = document.querySelectorAll('.tool-card-wrapper.draggable');
             tools.forEach(tool => {
                 tool.addEventListener('dragstart', handleToolDragStart);
                 tool.addEventListener('dragend', handleToolDragEnd);
                 tool.addEventListener('dragover', handleToolDragOver);
-                tool.addEventListener('drop', handleToolDrop);
-                tool.addEventListener('dragleave', handleToolDragLeave);
+                tool.addEventListener('dragenter', handleToolDragEnter);
             });
         }
 
-        // 分类拖拽处理
         function handleCategoryDragStart(e) {
             draggedElement = this;
             draggedType = 'category';
             draggedCategoryId = this.dataset.categoryId;
             this.classList.add('dragging');
             e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', this.innerHTML);
         }
 
         function handleCategoryDragEnd(e) {
@@ -1100,46 +1096,33 @@
             document.querySelectorAll('.category-section').forEach(cat => {
                 cat.classList.remove('drag-over');
             });
+            lastSwapTarget = null;
+            saveData();
+        }
+
+        function handleCategoryDragEnter(e) {
+            if (draggedType !== 'category' || this === draggedElement) return;
+            e.preventDefault();
+
+            if (lastSwapTarget === this) return;
+            lastSwapTarget = this;
+
+            const draggedIndex = data.categories.findIndex(c => c.id === draggedCategoryId);
+            const targetIndex = data.categories.findIndex(c => c.id === this.dataset.categoryId);
+
+            if (draggedIndex !== -1 && targetIndex !== -1 && draggedIndex !== targetIndex) {
+                const [removed] = data.categories.splice(draggedIndex, 1);
+                data.categories.splice(targetIndex, 0, removed);
+                renderCategories();
+            }
         }
 
         function handleCategoryDragOver(e) {
             if (draggedType !== 'category') return;
             e.preventDefault();
             e.dataTransfer.dropEffect = 'move';
-
-            if (this !== draggedElement) {
-                this.classList.add('drag-over');
-            }
         }
 
-        function handleCategoryDragLeave(e) {
-            if (e.target === this) {
-                this.classList.remove('drag-over');
-            }
-        }
-
-        function handleCategoryDrop(e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            if (draggedType !== 'category' || this === draggedElement) return;
-
-            this.classList.remove('drag-over');
-
-            const draggedIndex = data.categories.findIndex(c => c.id === draggedCategoryId);
-            const targetIndex = data.categories.findIndex(c => c.id === this.dataset.categoryId);
-
-            if (draggedIndex !== -1 && targetIndex !== -1) {
-                // 移动分类
-                const [removed] = data.categories.splice(draggedIndex, 1);
-                data.categories.splice(targetIndex, 0, removed);
-
-                saveData();
-                renderCategories();
-            }
-        }
-
-        // 工具拖拽处理
         function handleToolDragStart(e) {
             draggedElement = this;
             draggedType = 'tool';
@@ -1147,6 +1130,7 @@
             draggedToolId = this.dataset.toolId;
             this.classList.add('dragging');
             e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', this.innerHTML);
             e.stopPropagation();
         }
 
@@ -1155,38 +1139,18 @@
             document.querySelectorAll('.tool-card-wrapper').forEach(tool => {
                 tool.classList.remove('drag-over');
             });
+            lastSwapTarget = null;
+            saveData();
         }
 
-        function handleToolDragOver(e) {
-            if (draggedType !== 'tool') return;
-
-            // 只允许同一分类内拖拽
-            if (this.dataset.categoryId !== draggedCategoryId) return;
-
-            e.preventDefault();
-            e.dataTransfer.dropEffect = 'move';
-
-            if (this !== draggedElement) {
-                this.classList.add('drag-over');
-            }
-        }
-
-        function handleToolDragLeave(e) {
-            if (e.target === this || this.contains(e.target)) {
-                this.classList.remove('drag-over');
-            }
-        }
-
-        function handleToolDrop(e) {
-            e.preventDefault();
-            e.stopPropagation();
-
+        function handleToolDragEnter(e) {
             if (draggedType !== 'tool' || this === draggedElement) return;
-
-            // 只允许同一分类内拖拽
             if (this.dataset.categoryId !== draggedCategoryId) return;
 
-            this.classList.remove('drag-over');
+            e.preventDefault();
+
+            if (lastSwapTarget === this) return;
+            lastSwapTarget = this;
 
             const category = data.categories.find(c => c.id === draggedCategoryId);
             if (!category) return;
@@ -1194,14 +1158,19 @@
             const draggedIndex = category.tools.findIndex(t => t.id === draggedToolId);
             const targetIndex = category.tools.findIndex(t => t.id === this.dataset.toolId);
 
-            if (draggedIndex !== -1 && targetIndex !== -1) {
-                // 移动工具
+            if (draggedIndex !== -1 && targetIndex !== -1 && draggedIndex !== targetIndex) {
                 const [removed] = category.tools.splice(draggedIndex, 1);
                 category.tools.splice(targetIndex, 0, removed);
-
-                saveData();
                 renderCategories();
             }
+        }
+
+        function handleToolDragOver(e) {
+            if (draggedType !== 'tool') return;
+            if (this.dataset.categoryId !== draggedCategoryId) return;
+
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
         }
 
         // 页面加载时初始化
