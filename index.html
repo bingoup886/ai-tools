@@ -851,22 +851,43 @@
             document.getElementById('categoryNameInput').value = '';
         }
 
-        function addCategory() {
+        async function addCategory() {
             const name = document.getElementById('categoryNameInput').value.trim();
             if (!name) {
                 alert('请输入方向名称');
                 return;
             }
 
-            const newCategory = {
-                id: Date.now().toString(),
-                name: name,
-                tools: []
-            };
+            if (CONFIG.USE_LOCAL_STORAGE) {
+                const newCategory = {
+                    id: Date.now().toString(),
+                    name: name,
+                    tools: []
+                };
 
-            data.categories.push(newCategory);
-            saveData();
-            renderCategories();
+                data.categories.push(newCategory);
+                saveData();
+                renderCategories();
+            } else {
+                try {
+                    const response = await fetch(`${CONFIG.API_ENDPOINT}/categories`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name: name })
+                    });
+
+                    if (response.ok) {
+                        await loadData();
+                        renderCategories();
+                    } else {
+                        alert('添加分类失败');
+                    }
+                } catch (error) {
+                    console.error('添加分类失败:', error);
+                    alert('添加分类失败');
+                }
+            }
+
             closeAddCategoryModal();
         }
 
@@ -887,11 +908,24 @@
             input.select();
 
             // 保存函数
-            const saveName = () => {
+            const saveName = async () => {
                 const newName = input.value.trim();
                 if (newName && newName !== currentName) {
-                    category.name = newName;
-                    saveData();
+                    if (CONFIG.USE_LOCAL_STORAGE) {
+                        category.name = newName;
+                        saveData();
+                    } else {
+                        try {
+                            await fetch(`${CONFIG.API_ENDPOINT}/categories`, {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ id: categoryId, name: newName })
+                            });
+                            await loadData();
+                        } catch (error) {
+                            console.error('更新分类失败:', error);
+                        }
+                    }
                 }
                 renderCategories();
             };
@@ -915,12 +949,30 @@
         }
 
         // 删除分类
-        function deleteCategory(categoryId) {
+        async function deleteCategory(categoryId) {
             if (!confirm('确定要删除这个分类吗？')) return;
 
-            data.categories = data.categories.filter(c => c.id !== categoryId);
-            saveData();
-            renderCategories();
+            if (CONFIG.USE_LOCAL_STORAGE) {
+                data.categories = data.categories.filter(c => c.id !== categoryId);
+                saveData();
+                renderCategories();
+            } else {
+                try {
+                    const response = await fetch(`${CONFIG.API_ENDPOINT}/categories?id=${categoryId}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (response.ok) {
+                        await loadData();
+                        renderCategories();
+                    } else {
+                        alert('删除分类失败');
+                    }
+                } catch (error) {
+                    console.error('删除分类失败:', error);
+                    alert('删除分类失败');
+                }
+            }
         }
 
         // 添加工具
@@ -949,10 +1001,9 @@
             currentEditToolId = null;
         }
 
-        function addTool() {
-            // 如果是编辑模式，调用更新函数
+        async function addTool() {
             if (currentEditToolId) {
-                updateTool();
+                await updateTool();
                 return;
             }
 
@@ -965,21 +1016,47 @@
                 return;
             }
 
-            const category = data.categories.find(c => c.id === currentCategoryId);
-            if (!category) return;
+            if (CONFIG.USE_LOCAL_STORAGE) {
+                const category = data.categories.find(c => c.id === currentCategoryId);
+                if (!category) return;
 
-            const newTool = {
-                id: `${currentCategoryId}-${Date.now()}`,
-                name: name,
-                url: url,
-                description: description,
-                upvotes: 0,
-                downvotes: 0
-            };
+                const newTool = {
+                    id: `${currentCategoryId}-${Date.now()}`,
+                    name: name,
+                    url: url,
+                    description: description,
+                    upvotes: 0,
+                    downvotes: 0
+                };
 
-            category.tools.push(newTool);
-            saveData();
-            renderCategories();
+                category.tools.push(newTool);
+                saveData();
+                renderCategories();
+            } else {
+                try {
+                    const response = await fetch(`${CONFIG.API_ENDPOINT}/tools`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            category_id: currentCategoryId,
+                            name: name,
+                            url: url,
+                            description: description
+                        })
+                    });
+
+                    if (response.ok) {
+                        await loadData();
+                        renderCategories();
+                    } else {
+                        alert('添加工具失败');
+                    }
+                } catch (error) {
+                    console.error('添加工具失败:', error);
+                    alert('添加工具失败');
+                }
+            }
+
             closeAddToolModal();
         }
 
@@ -1008,7 +1085,7 @@
             document.getElementById('addToolModal').classList.add('show');
         }
 
-        function updateTool() {
+        async function updateTool() {
             const name = document.getElementById('toolNameInput').value.trim();
             const url = document.getElementById('toolUrlInput').value.trim();
             const description = document.getElementById('toolDescInput').value.trim();
@@ -1018,31 +1095,75 @@
                 return;
             }
 
-            const category = data.categories.find(c => c.id === currentCategoryId);
-            if (!category) return;
+            if (CONFIG.USE_LOCAL_STORAGE) {
+                const category = data.categories.find(c => c.id === currentCategoryId);
+                if (!category) return;
 
-            const tool = category.tools.find(t => t.id === currentEditToolId);
-            if (!tool) return;
+                const tool = category.tools.find(t => t.id === currentEditToolId);
+                if (!tool) return;
 
-            tool.name = name;
-            tool.url = url;
-            tool.description = description;
+                tool.name = name;
+                tool.url = url;
+                tool.description = description;
 
-            saveData();
-            renderCategories();
+                saveData();
+                renderCategories();
+            } else {
+                try {
+                    const response = await fetch(`${CONFIG.API_ENDPOINT}/tools`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            id: currentEditToolId,
+                            name: name,
+                            url: url,
+                            description: description
+                        })
+                    });
+
+                    if (response.ok) {
+                        await loadData();
+                        renderCategories();
+                    } else {
+                        alert('更新工具失败');
+                    }
+                } catch (error) {
+                    console.error('更新工具失败:', error);
+                    alert('更新工具失败');
+                }
+            }
+
             closeAddToolModal();
         }
 
         // 删除工具
-        function deleteTool(categoryId, toolId) {
+        async function deleteTool(categoryId, toolId) {
             if (!confirm('确定要删除这个工具吗？')) return;
 
-            const category = data.categories.find(c => c.id === categoryId);
-            if (!category) return;
+            if (CONFIG.USE_LOCAL_STORAGE) {
+                const category = data.categories.find(c => c.id === categoryId);
+                if (!category) return;
 
-            category.tools = category.tools.filter(t => t.id !== toolId);
-            saveData();
-            renderCategories();
+                category.tools = category.tools.filter(t => t.id !== toolId);
+                saveData();
+                renderCategories();
+            } else {
+                try {
+                    const response = await fetch(`${CONFIG.API_ENDPOINT}/tools?id=${toolId}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (response.ok) {
+                        await loadData();
+                        renderCategories();
+                    } else {
+                        alert('删除工具失败');
+                    }
+                } catch (error) {
+                    console.error('删除工具失败:', error);
+                    alert('删除工具失败');
+                }
+            }
         }
 
         let categorySortable = null;
