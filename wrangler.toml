@@ -7,8 +7,12 @@ command = "npm run build"
 cwd = "./"
 root = "dist"
 
+[build.upload]
+format = "modules"
+
 [env.production]
 name = "geek-tools-prod"
+vars = { NODE_VERSION = "20.17.0" }
 
 [[d1_databases]]
 binding = "DB"
