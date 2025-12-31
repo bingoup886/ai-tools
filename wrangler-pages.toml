@@ -14,5 +14,5 @@ format = "modules"
 
 # 指定 Node.js 版本
 [env.production.vars]
-NODE_VERSION = "20.17.0"
+NODE_VERSION = "20.19.0"
 
