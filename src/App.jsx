@@ -1,12 +1,11 @@
-import { useState, useRef, useEffect } from 'react'
-import { Header } from './components/Header'
-import { CategoryCard } from './components/CategoryCard'
-import { PasswordModal } from './components/PasswordModal'
-import { CategoryModal } from './components/CategoryModal'
-import { CategorySortModal } from './components/CategorySortModal'
-import { ToolModal } from './components/ToolModal'
-import { useData } from './hooks/useData'
-import Sortable from 'sortablejs'
+import {useEffect, useRef, useState} from 'react'
+import {Header} from './components/Header'
+import {CategoryCard} from './components/CategoryCard'
+import {PasswordModal} from './components/PasswordModal'
+import {CategoryModal} from './components/CategoryModal'
+import {CategorySortModal} from './components/CategorySortModal'
+import {ToolModal} from './components/ToolModal'
+import {useData} from './hooks/useData'
 
 function App() {
   const [isEditMode, setIsEditMode] = useState(false)
@@ -17,7 +16,6 @@ function App() {
   const [currentCategoryId, setCurrentCategoryId] = useState(null)
   const [editingTool, setEditingTool] = useState(null)
   const categoriesContainerRef = useRef(null)
-  const categorySortableRef = useRef(null)
 
   const {
     data,
@@ -34,33 +32,6 @@ function App() {
     sortTools
   } = useData()
 
-  // Initialize Sortable for categories
-  useEffect(() => {
-    if (isEditMode && categoriesContainerRef.current && !categorySortableRef.current) {
-      categorySortableRef.current = new Sortable(categoriesContainerRef.current, {
-        animation: 200,
-        ghostClass: 'dragging',
-        chosenClass: 'drag-over',
-        dragClass: 'dragging',
-        forceFallback: true,
-        fallbackTolerance: 3,
-        onEnd: async (evt) => {
-          if (evt.oldIndex !== evt.newIndex) {
-            const sortedCategories = Array.from(categoriesContainerRef.current.children)
-              .map(el => el.getAttribute('data-category-id'))
-            await sortCategories(sortedCategories)
-          }
-        }
-      })
-    }
-
-    return () => {
-      if (categorySortableRef.current && !isEditMode) {
-        categorySortableRef.current.destroy()
-        categorySortableRef.current = null
-      }
-    }
-  }, [isEditMode, sortCategories])
 
   const handleToggleMode = () => {
     if (isEditMode) {

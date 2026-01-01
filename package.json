@@ -1,6 +1,6 @@
 {
   "name": "ai-tools",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "一个现代化的工具导航网站，支持分类管理、投票排名、拖拽排序、维护模式等功能。基于 Cloudflare Pages + D1 数据库，完全免费部署！",
   "main": "index.js",
   "engines": {
