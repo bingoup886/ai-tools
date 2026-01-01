@@ -6,6 +6,7 @@ import {CategoryModal} from './components/CategoryModal'
 import {CategorySortModal} from './components/CategorySortModal'
 import {ToolModal} from './components/ToolModal'
 import {useData} from './hooks/useData'
+import {useAdminMode} from './hooks/useAdminMode'
 
 function App() {
   const [isEditMode, setIsEditMode] = useState(false)
@@ -16,6 +17,8 @@ function App() {
   const [currentCategoryId, setCurrentCategoryId] = useState(null)
   const [editingTool, setEditingTool] = useState(null)
   const categoriesContainerRef = useRef(null)
+
+  const { handleLogoClick, showAdminHint, isAdminModeTriggered } = useAdminMode()
 
   const {
     data,
@@ -41,6 +44,13 @@ function App() {
   useEffect(() => {
     loadTags()
   }, [])
+
+  // 当管理员模式被触发时，自动显示密码输入框
+  useEffect(() => {
+    if (isAdminModeTriggered && !isEditMode) {
+      setShowPasswordModal(true)
+    }
+  }, [isAdminModeTriggered, isEditMode])
 
 
   const handleToggleMode = () => {
@@ -183,7 +193,12 @@ function App() {
   if (loading) {
     return (
       <div>
-        <Header isEditMode={isEditMode} onToggleMode={handleToggleMode} />
+        <Header
+          isEditMode={isEditMode}
+          onToggleMode={handleToggleMode}
+          onLogoClick={handleLogoClick}
+          showAdminHint={showAdminHint}
+        />
         <div className="container">
           <div className="empty-state">加载中...</div>
         </div>
@@ -194,7 +209,12 @@ function App() {
   if (error) {
     return (
       <div>
-        <Header isEditMode={isEditMode} onToggleMode={handleToggleMode} />
+        <Header
+          isEditMode={isEditMode}
+          onToggleMode={handleToggleMode}
+          onLogoClick={handleLogoClick}
+          showAdminHint={showAdminHint}
+        />
         <div className="container">
           <div className="empty-state">加载失败: {error}</div>
         </div>
@@ -208,6 +228,8 @@ function App() {
         isEditMode={isEditMode}
         onToggleMode={handleToggleMode}
         onOpenSortModal={() => setShowCategorySortModal(true)}
+        onLogoClick={handleLogoClick}
+        showAdminHint={showAdminHint}
       />
 
       <div className="container">
