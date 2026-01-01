@@ -37,7 +37,6 @@ function App() {
     if (isEditMode && categoriesContainerRef.current && !categorySortableRef.current) {
       categorySortableRef.current = new Sortable(categoriesContainerRef.current, {
         animation: 200,
-        handle: '.category-header',
         ghostClass: 'dragging',
         chosenClass: 'drag-over',
         dragClass: 'dragging',
