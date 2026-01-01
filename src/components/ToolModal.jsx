@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Modal } from './Modal'
 import { TagSelector } from './TagSelector'
 
-export const ToolModal = ({ isOpen, onClose, onSubmit, initialValue = null, availableTags = [] }) => {
+export const ToolModal = ({ isOpen, onClose, onSubmit, initialValue = null, availableTags = [], onCreateTag }) => {
   const [name, setName] = useState('')
   const [url, setUrl] = useState('')
   const [description, setDescription] = useState('')
@@ -90,6 +90,7 @@ export const ToolModal = ({ isOpen, onClose, onSubmit, initialValue = null, avai
         availableTags={availableTags}
         selectedTagIds={selectedTagIds}
         onChange={setSelectedTagIds}
+        onCreateTag={onCreateTag}
       />
       <div className="modal-actions">
         <button className="btn btn-danger" onClick={onClose}>
