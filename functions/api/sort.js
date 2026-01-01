@@ -20,16 +20,13 @@ export async function onRequestPost(context) {
 
         if (type === 'categories') {
             // 更新分类排序
-            console.log('Updating category sort order:', items);
             for (let i = 0; i < items.length; i++) {
-                console.log(`Setting category ${items[i]} to sort_order ${i}`);
                 await env.DB.prepare(`
                     UPDATE categories
                     SET sort_order = ?, updated_at = CURRENT_TIMESTAMP
                     WHERE id = ?
                 `).bind(i, items[i]).run();
             }
-            console.log('Category sort order updated successfully');
         } else if (type === 'tools') {
             // 更新工具排序
             if (!category_id) {
