@@ -37,20 +37,25 @@ export const ToolCard = ({
             {tool.name}
           </a>
         </div>
+        {tool.description && (
+          <div style={{ fontSize: '0.85em', color: '#a0a0c0', lineHeight: '1.4' }}>
+            {tool.description}
+          </div>
+        )}
         <div className="vote-buttons">
           <button
             className={`vote-btn upvote ${currentVote === 'up' ? 'active' : ''}`}
             onClick={() => handleVote('up')}
             title="点赞"
           >
-            👍{tool.upvotes || 0}
+            👍 {tool.upvotes || 0}
           </button>
           <button
             className={`vote-btn downvote ${currentVote === 'down' ? 'active' : ''}`}
             onClick={() => handleVote('down')}
             title="点踩"
           >
-            👎{tool.downvotes || 0}
+            👎 {tool.downvotes || 0}
           </button>
         </div>
         {isEditMode && (
