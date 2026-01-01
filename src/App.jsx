@@ -21,6 +21,7 @@ function App() {
     data,
     loading,
     error,
+    loadData,
     addCategory,
     updateCategory,
     deleteCategory,
@@ -96,7 +97,9 @@ function App() {
 
     try {
       if (editingTool) {
-        const success = await updateTool(editingTool.id, toolInfo)
+        // 如果有标签要设置，跳过第一次刷新，在 setToolTags 中统一刷新
+        const skipRefresh = tagIds && tagIds.length > 0
+        const success = await updateTool(editingTool.id, toolInfo, skipRefresh)
         if (success && tagIds) {
           await setToolTags(editingTool.id, tagIds)
         }
@@ -105,7 +108,9 @@ function App() {
           return
         }
       } else {
-        const result = await addTool(currentCategoryId, toolInfo)
+        // 如果有标签要设置，跳过第一次刷新，在 setToolTags 中统一刷新
+        const skipRefresh = tagIds && tagIds.length > 0
+        const result = await addTool(currentCategoryId, toolInfo, skipRefresh)
         if (!result) {
           alert('添加工具失败')
           return
@@ -122,6 +127,9 @@ function App() {
               await setToolTags(newTool.id, tagIds)
             }
           }
+        } else {
+          // 没有标签，需要手动刷新数据
+          await loadData()
         }
       }
     } catch (err) {
