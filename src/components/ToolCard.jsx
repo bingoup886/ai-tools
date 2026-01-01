@@ -32,29 +32,26 @@ export const ToolCard = ({
         <div className="tool-description">{tool.description}</div>
       )}
       <div className="tool-card">
-        <div className="tool-content">
-          <div className="tool-rank">{rank}</div>
-          <div className="tool-name">
-            <a href={tool.url} target="_blank" rel="noopener noreferrer" title={tool.url}>
-              {tool.name}
-            </a>
-          </div>
-          <div className="vote-buttons">
-            <button
-              className={`vote-btn upvote ${currentVote === 'up' ? 'active' : ''}`}
-              onClick={() => handleVote('up')}
-              title="点赞"
-            >
-              👍{tool.upvotes || 0}
-            </button>
-            <button
-              className={`vote-btn downvote ${currentVote === 'down' ? 'active' : ''}`}
-              onClick={() => handleVote('down')}
-              title="点踩"
-            >
-              👎{tool.downvotes || 0}
-            </button>
-          </div>
+        <div className="tool-name">
+          <a href={tool.url} target="_blank" rel="noopener noreferrer" title={tool.url}>
+            {tool.name}
+          </a>
+        </div>
+        <div className="vote-buttons">
+          <button
+            className={`vote-btn upvote ${currentVote === 'up' ? 'active' : ''}`}
+            onClick={() => handleVote('up')}
+            title="点赞"
+          >
+            👍{tool.upvotes || 0}
+          </button>
+          <button
+            className={`vote-btn downvote ${currentVote === 'down' ? 'active' : ''}`}
+            onClick={() => handleVote('down')}
+            title="点踩"
+          >
+            👎{tool.downvotes || 0}
+          </button>
         </div>
         {isEditMode && (
           <>
