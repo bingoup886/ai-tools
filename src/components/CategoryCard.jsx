@@ -1,6 +1,5 @@
-import { useState, useRef, useEffect } from 'react'
-import { ToolCard } from './ToolCard'
-import { useData } from '../hooks/useData'
+import {useEffect, useRef, useState} from 'react'
+import {ToolCard} from './ToolCard'
 import Sortable from 'sortablejs'
 
 export const CategoryCard = ({

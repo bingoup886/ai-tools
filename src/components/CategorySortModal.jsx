@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react'
-import { Modal } from './Modal'
+import {useEffect, useRef, useState} from 'react'
+import {Modal} from './Modal'
 import Sortable from 'sortablejs'
 
 export const CategorySortModal = ({ isOpen, categories = [], onClose, onSave }) => {
