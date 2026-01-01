@@ -238,7 +238,7 @@ function App() {
         {isEditMode && (
           <div className="add-category-section show">
             <button className="btn btn-success" onClick={() => setShowCategoryModal(true)}>
-              ➕ 添加新方向
+              ➕ 添加新分类
             </button>
           </div>
         )}
@@ -262,7 +262,7 @@ function App() {
             ))
           ) : (
             <div className="empty-state">
-              暂无工具分类，{isEditMode ? '点击上方按钮添加新方向' : '敬请期待'}
+              暂无工具分类，{isEditMode ? '点击上方按钮添加新分类' : '敬请期待'}
             </div>
           )}
         </div>

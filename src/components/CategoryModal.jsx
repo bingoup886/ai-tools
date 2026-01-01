@@ -11,7 +11,7 @@ export const CategoryModal = ({ isOpen, onClose, onSubmit, initialValue = '' }) 
   const handleSubmit = () => {
     const trimmedName = name.trim()
     if (!trimmedName) {
-      alert('请输入方向名称')
+      alert('请输入分类名称')
       return
     }
     onSubmit(trimmedName)
@@ -25,9 +25,9 @@ export const CategoryModal = ({ isOpen, onClose, onSubmit, initialValue = '' }) 
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="添加新方向">
+    <Modal isOpen={isOpen} onClose={onClose} title="添加新分类">
       <div className="form-group">
-        <label>方向名称：</label>
+        <label>分类名称：</label>
         <input
           type="text"
           value={name}
