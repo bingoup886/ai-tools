@@ -146,7 +146,22 @@ export const useData = () => {
         body: JSON.stringify({ tool_id: toolId, vote_type: voteType })
       })
       if (response.ok) {
-        await loadData()
+        const voteData = await response.json()
+        // 局部更新：只更新对应工具的投票数，不重新加载整个页面
+        setData(prevData => {
+          const newData = JSON.parse(JSON.stringify(prevData))
+          const category = newData.categories.find(cat =>
+            cat.tools.some(tool => tool.id === toolId)
+          )
+          if (category) {
+            const tool = category.tools.find(t => t.id === toolId)
+            if (tool) {
+              tool.upvotes = voteData.upvotes
+              tool.downvotes = voteData.downvotes
+            }
+          }
+          return newData
+        })
         return true
       }
       return false
@@ -163,7 +178,12 @@ export const useData = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type: 'categories', items: categoryIds })
       })
-      return response.ok
+      if (response.ok) {
+        // 排序成功后，重新加载数据以获取最新的排序顺序
+        await loadData()
+        return true
+      }
+      return false
     } catch (err) {
       console.error('Error sorting categories:', err)
       return false

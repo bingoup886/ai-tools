@@ -3,6 +3,7 @@ import { Header } from './components/Header'
 import { CategoryCard } from './components/CategoryCard'
 import { PasswordModal } from './components/PasswordModal'
 import { CategoryModal } from './components/CategoryModal'
+import { CategorySortModal } from './components/CategorySortModal'
 import { ToolModal } from './components/ToolModal'
 import { useData } from './hooks/useData'
 import Sortable from 'sortablejs'
@@ -11,6 +12,7 @@ function App() {
   const [isEditMode, setIsEditMode] = useState(false)
   const [showPasswordModal, setShowPasswordModal] = useState(false)
   const [showCategoryModal, setShowCategoryModal] = useState(false)
+  const [showCategorySortModal, setShowCategorySortModal] = useState(false)
   const [showToolModal, setShowToolModal] = useState(false)
   const [currentCategoryId, setCurrentCategoryId] = useState(null)
   const [editingTool, setEditingTool] = useState(null)
@@ -37,7 +39,6 @@ function App() {
     if (isEditMode && categoriesContainerRef.current && !categorySortableRef.current) {
       categorySortableRef.current = new Sortable(categoriesContainerRef.current, {
         animation: 200,
-        handle: '.category-header',
         ghostClass: 'dragging',
         chosenClass: 'drag-over',
         dragClass: 'dragging',
@@ -167,7 +168,11 @@ function App() {
 
   return (
     <div>
-      <Header isEditMode={isEditMode} onToggleMode={handleToggleMode} />
+      <Header
+        isEditMode={isEditMode}
+        onToggleMode={handleToggleMode}
+        onOpenSortModal={() => setShowCategorySortModal(true)}
+      />
 
       <div className="container">
         {isEditMode && (
@@ -213,6 +218,13 @@ function App() {
         isOpen={showCategoryModal}
         onClose={() => setShowCategoryModal(false)}
         onSubmit={handleAddCategory}
+      />
+
+      <CategorySortModal
+        isOpen={showCategorySortModal}
+        categories={data.categories || []}
+        onClose={() => setShowCategorySortModal(false)}
+        onSave={sortCategories}
       />
 
       <ToolModal
