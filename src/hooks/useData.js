@@ -237,42 +237,6 @@ export const useData = () => {
     }
   }
 
-  const updateTag = async (tagId, tagData) => {
-    try {
-      const response = await fetch(`${API_ENDPOINT}/tags`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: tagId, ...tagData })
-      })
-      if (response.ok) {
-        await loadTags()
-        return true
-      }
-      return false
-    } catch (err) {
-      console.error('Error updating tag:', err)
-      return false
-    }
-  }
-
-  const deleteTag = async (tagId) => {
-    try {
-      const response = await fetch(`${API_ENDPOINT}/tags`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: tagId })
-      })
-      if (response.ok) {
-        await loadTags()
-        return true
-      }
-      return false
-    } catch (err) {
-      console.error('Error deleting tag:', err)
-      return false
-    }
-  }
-
   const setToolTags = async (toolId, tagIds) => {
     try {
       const response = await fetch(`${API_ENDPOINT}/tool-tags`, {
@@ -326,8 +290,6 @@ export const useData = () => {
     tags,
     loadTags,
     addTag,
-    updateTag,
-    deleteTag,
     setToolTags,
     removeToolTag
   }
