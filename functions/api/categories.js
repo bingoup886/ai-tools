@@ -1,8 +1,10 @@
+import { createResponse, createErrorResponse, handleRequest, corsHeaders } from '../_utils';
+
 // API: 获取所有分类和工具
 export async function onRequestGet(context) {
-    const { env } = context;
+    return handleRequest(async () => {
+        const { env } = context;
 
-    try {
         // 优化：一次性查询获取所有分类、工具、投票和标签数据
         // 使用子查询分别计算投票和标签，避免 JOIN 导致的数据重复
         const result = await env.DB.prepare(`
@@ -100,43 +102,18 @@ export async function onRequestGet(context) {
 
         const categories = Array.from(categoriesMap.values());
 
-        return new Response(JSON.stringify({ categories }), {
-            headers: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
-            }
-        });
-
-    } catch (error) {
-        console.error('获取分类失败:', error);
-        return new Response(JSON.stringify({
-            error: error.message,
-            categories: []
-        }), {
-            status: 500,
-            headers: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
-            }
-        });
-    }
+        return createResponse({ categories });
+    });
 }
 
 // API: 创建分类
 export async function onRequestPost(context) {
-    const { request, env } = context;
-
-    try {
+    return handleRequest(async () => {
+        const { request, env } = context;
         const { name, description } = await request.json();
 
         if (!name) {
-            return new Response(JSON.stringify({ error: '分类名称不能为空' }), {
-                status: 400,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Access-Control-Allow-Origin': '*'
-                }
-            });
+            return createErrorResponse('分类名称不能为空', 400);
         }
 
         // 获取当前最大排序值
@@ -152,43 +129,21 @@ export async function onRequestPost(context) {
             VALUES (?, ?, ?)
         `).bind(name, description || null, sortOrder).run();
 
-        return new Response(JSON.stringify({
+        return createResponse({
             success: true,
             id: result.meta.last_row_id
-        }), {
-            headers: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
-            }
         });
-
-    } catch (error) {
-        console.error('创建分类失败:', error);
-        return new Response(JSON.stringify({ error: error.message }), {
-            status: 500,
-            headers: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
-            }
-        });
-    }
+    });
 }
 
 // API: 更新分类
 export async function onRequestPut(context) {
-    const { request, env } = context;
-
-    try {
+    return handleRequest(async () => {
+        const { request, env } = context;
         const { id, name, description } = await request.json();
 
         if (!id || !name) {
-            return new Response(JSON.stringify({ error: '参数错误' }), {
-                status: 400,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Access-Control-Allow-Origin': '*'
-                }
-            });
+            return createErrorResponse('参数错误', 400);
         }
 
         await env.DB.prepare(`
@@ -197,73 +152,32 @@ export async function onRequestPut(context) {
             WHERE id = ?
         `).bind(name, description || null, id).run();
 
-        return new Response(JSON.stringify({ success: true }), {
-            headers: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
-            }
-        });
-
-    } catch (error) {
-        console.error('更新分类失败:', error);
-        return new Response(JSON.stringify({ error: error.message }), {
-            status: 500,
-            headers: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
-            }
-        });
-    }
+        return createResponse({ success: true });
+    });
 }
 
 // API: 删除分类
 export async function onRequestDelete(context) {
-    const { request, env } = context;
-
-    try {
+    return handleRequest(async () => {
+        const { request, env } = context;
         const url = new URL(request.url);
         const id = url.searchParams.get('id');
 
         if (!id) {
-            return new Response(JSON.stringify({ error: '缺少分类ID' }), {
-                status: 400,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Access-Control-Allow-Origin': '*'
-                }
-            });
+            return createErrorResponse('缺少分类ID', 400);
         }
 
         await env.DB.prepare(`
             DELETE FROM categories WHERE id = ?
         `).bind(id).run();
 
-        return new Response(JSON.stringify({ success: true }), {
-            headers: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
-            }
-        });
-
-    } catch (error) {
-        console.error('删除分类失败:', error);
-        return new Response(JSON.stringify({ error: error.message }), {
-            status: 500,
-            headers: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
-            }
-        });
-    }
+        return createResponse({ success: true });
+    });
 }
 
 export async function onRequestOptions() {
     return new Response(null, {
-        headers: {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-            'Access-Control-Allow-Headers': 'Content-Type',
-        }
+        headers: corsHeaders
     });
 }
 

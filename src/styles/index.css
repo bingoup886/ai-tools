@@ -153,9 +153,11 @@ body {
   background: transparent;
   padding: 18px 0;
   border-radius: 12px;
-  margin-bottom: 18px;
+  margin-bottom: 24px;
   box-shadow: none;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 24px;
 }
 
 .category-section.draggable {
@@ -176,7 +178,13 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
+  margin-bottom: 16px;
+}
+
+.category-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0;
 }
 
 .category-title {
@@ -201,6 +209,8 @@ body {
 
 .category-name {
   cursor: default;
+  font-size: 20px;
+  font-weight: 600;
 }
 
 .category-name.editable {
@@ -215,8 +225,8 @@ body {
 }
 
 .category-name-input {
-  font-size: 1.2em;
-  font-weight: 700;
+  font-size: 20px;
+  font-weight: 600;
   color: #2c3e50;
   border: 2px solid #667eea;
   border-radius: 5px;
@@ -236,9 +246,41 @@ body {
   opacity: 1;
 }
 
+.category-tags-wrapper {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-left: 30px;
+}
+
+.category-tag {
+  padding: 4px 12px;
+  background-color: #f5f5f5;
+  color: #667eea;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.category-tag:hover {
+  background-color: rgba(102, 126, 234, 0.1); /* #667eea + 20 alpha approx */
+}
+
+.category-tag.active {
+  color: #fff;
+}
+
 .category-actions {
   display: flex;
   gap: 8px;
+  margin-left: 16px;
 }
 
 .tools-grid {

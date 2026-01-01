@@ -1,6 +1,6 @@
-import {useEffect, useRef, useState} from 'react'
-import {ToolCard} from './ToolCard'
-import Sortable from 'sortablejs'
+import { useEffect, useRef, useState, useMemo } from 'react'
+import { ToolCard } from './ToolCard'
+import { useSortable } from '../hooks/useSortable'
 
 export const CategoryCard = ({
   category,
@@ -19,7 +19,14 @@ export const CategoryCard = ({
   const [selectedTagId, setSelectedTagId] = useState(null)
   const inputRef = useRef(null)
   const gridRef = useRef(null)
-  const sortableRef = useRef(null)
+
+  // 使用自定义 Hook 处理拖拽
+  useSortable({
+    containerRef: gridRef,
+    enabled: isEditMode,
+    onSort: (sortedIds) => onSortTools(category.id, sortedIds),
+    idAttribute: 'data-tool-id'
+  })
 
   useEffect(() => {
     if (isEditingName && inputRef.current) {
@@ -27,34 +34,6 @@ export const CategoryCard = ({
       inputRef.current.select()
     }
   }, [isEditingName])
-
-  // Initialize Sortable for tools
-  useEffect(() => {
-    if (isEditMode && gridRef.current && !sortableRef.current) {
-      sortableRef.current = new Sortable(gridRef.current, {
-        animation: 200,
-        ghostClass: 'dragging',
-        chosenClass: 'drag-over',
-        dragClass: 'dragging',
-        forceFallback: true,
-        fallbackTolerance: 3,
-        onEnd: async (evt) => {
-          if (evt.oldIndex !== evt.newIndex) {
-            const sortedTools = Array.from(gridRef.current.children)
-              .map(el => el.getAttribute('data-tool-id'))
-            onSortTools(category.id, sortedTools)
-          }
-        }
-      })
-    }
-
-    return () => {
-      if (sortableRef.current && !isEditMode) {
-        sortableRef.current.destroy()
-        sortableRef.current = null
-      }
-    }
-  }, [isEditMode, category.id, onSortTools])
 
   const handleNameEdit = async () => {
     if (editingName.trim() && editingName !== category.name) {
@@ -73,52 +52,43 @@ export const CategoryCard = ({
     }
   }
 
-  // 先排序，再过滤
-  let sortedTools = [...(category.tools || [])].sort((a, b) => {
-    const scoreA = (a.upvotes || 0) - (a.downvotes || 0)
-    const scoreB = (b.upvotes || 0) - (b.downvotes || 0)
-    return scoreB - scoreA
-  })
-
-  // 根据选中的标签进行过滤
-  if (selectedTagId) {
-    sortedTools = sortedTools.filter(tool => {
-      return tool.tags && tool.tags.some(tag => tag.id === selectedTagId)
-    })
-  }
-
   // 提取该分类下所有标签
-  const allTags = new Map()
-  const tools = category.tools || []
-  tools.forEach(tool => {
-    if (tool.tags && Array.isArray(tool.tags)) {
-      tool.tags.forEach(tag => {
-        if (!allTags.has(tag.id)) {
-          allTags.set(tag.id, tag)
-        }
+  const uniqueTags = useMemo(() => {
+    const allTags = new Map()
+    const tools = category.tools || []
+    tools.forEach(tool => {
+      if (tool.tags && Array.isArray(tool.tags)) {
+        tool.tags.forEach(tag => {
+          if (!allTags.has(tag.id)) {
+            allTags.set(tag.id, tag)
+          }
+        })
+      }
+    })
+    return Array.from(allTags.values())
+  }, [category.tools])
+
+  // 先排序，再过滤
+  const sortedTools = useMemo(() => {
+    let tools = [...(category.tools || [])].sort((a, b) => {
+      const scoreA = (a.upvotes || 0) - (a.downvotes || 0)
+      const scoreB = (b.upvotes || 0) - (b.downvotes || 0)
+      return scoreB - scoreA
+    })
+
+    if (selectedTagId) {
+      tools = tools.filter(tool => {
+        return tool.tags && tool.tags.some(tag => tag.id === selectedTagId)
       })
     }
-  })
-  const uniqueTags = Array.from(allTags.values())
+    return tools
+  }, [category.tools, selectedTagId])
 
   return (
-    <div className={`category-section ${isEditMode ? 'draggable' : ''}`} data-category-id={category.id} style={{
-      borderBottom: '1px solid #f0f0f0',
-      paddingBottom: '24px',
-      marginBottom: '24px'
-    }}>
+    <div className={`category-section ${isEditMode ? 'draggable' : ''}`} data-category-id={category.id}>
       {/* Category 标题和标签栏 */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '16px'
-      }}>
-        <div className="category-header" style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0'
-        }}>
+      <div className="category-header">
+        <div className="category-header-left">
           <div className="category-title">
             {isEditingName ? (
               <input
@@ -129,21 +99,13 @@ export const CategoryCard = ({
                 onChange={(e) => setEditingName(e.target.value)}
                 onKeyDown={handleKeyPress}
                 onBlur={handleNameEdit}
-                style={{
-                  fontSize: '20px',
-                  fontWeight: '600'
-                }}
               />
             ) : (
               <>
                 <span
                   className={`category-name ${isEditMode ? 'editable' : ''}`}
                   onClick={() => isEditMode && setIsEditingName(true)}
-                  style={{
-                    fontSize: '20px',
-                    fontWeight: '600',
-                    cursor: isEditMode ? 'pointer' : 'default'
-                  }}
+                  style={{ cursor: isEditMode ? 'pointer' : 'default' }}
                 >
                   {category.name}
                 </span>
@@ -154,39 +116,14 @@ export const CategoryCard = ({
 
           {/* 标签展示 */}
           {uniqueTags.length > 0 && (
-            <div style={{
-              display: 'flex',
-              gap: '8px',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-              marginLeft: '30px'
-            }}>
+            <div className="category-tags-wrapper">
               {/* "所有" 虚拟标签 */}
               <div
+                className={`category-tag ${selectedTagId === null ? 'active' : ''}`}
                 onClick={() => setSelectedTagId(null)}
                 style={{
-                  padding: '4px 12px',
-                  backgroundColor: selectedTagId === null ? '#667eea' : '#f5f5f5',
-                  color: selectedTagId === null ? '#fff' : '#667eea',
-                  borderRadius: '12px',
-                  fontSize: '12px',
-                  fontWeight: '500',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
-                  whiteSpace: 'nowrap',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '4px'
-                }}
-                onMouseEnter={(e) => {
-                  if (selectedTagId !== null) {
-                    e.currentTarget.style.backgroundColor = '#667eea' + '20'
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (selectedTagId !== null) {
-                    e.currentTarget.style.backgroundColor = '#f5f5f5'
-                  }
+                    backgroundColor: selectedTagId === null ? '#667eea' : '#f5f5f5',
+                    color: selectedTagId === null ? '#fff' : '#667eea'
                 }}
               >
                 <span>所有</span>
@@ -195,30 +132,11 @@ export const CategoryCard = ({
               {uniqueTags.map(tag => (
                 <div
                   key={tag.id}
+                  className={`category-tag ${selectedTagId === tag.id ? 'active' : ''}`}
                   onClick={() => setSelectedTagId(selectedTagId === tag.id ? null : tag.id)}
                   style={{
-                    padding: '4px 12px',
                     backgroundColor: selectedTagId === tag.id ? tag.color || '#667eea' : '#f5f5f5',
-                    color: selectedTagId === tag.id ? '#fff' : tag.color || '#667eea',
-                    borderRadius: '12px',
-                    fontSize: '12px',
-                    fontWeight: '500',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                    whiteSpace: 'nowrap',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px'
-                  }}
-                  onMouseEnter={(e) => {
-                    if (selectedTagId !== tag.id) {
-                      e.currentTarget.style.backgroundColor = (tag.color || '#667eea') + '20'
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (selectedTagId !== tag.id) {
-                      e.currentTarget.style.backgroundColor = '#f5f5f5'
-                    }
+                    color: selectedTagId === tag.id ? '#fff' : tag.color || '#667eea'
                   }}
                 >
                   {tag.icon && <span>{tag.icon}</span>}
@@ -230,7 +148,7 @@ export const CategoryCard = ({
         </div>
 
         {/* 操作按钮 */}
-        <div className="category-actions" style={{ marginLeft: '16px' }}>
+        <div className="category-actions">
           {isEditMode && (
             <>
               <button className="btn btn-primary btn-small" onClick={() => onAddTool(category.id)}>
