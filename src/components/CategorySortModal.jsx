@@ -6,9 +6,11 @@ export const CategorySortModal = ({ isOpen, categories = [], onClose, onSave }) 
   const [sortedCategories, setSortedCategories] = useState([])
   const listRef = useRef(null)
   const sortableRef = useRef(null)
+  const sortedCategoriesRef = useRef([])
 
   useEffect(() => {
     setSortedCategories([...categories])
+    sortedCategoriesRef.current = [...categories]
   }, [isOpen, categories])
 
   useEffect(() => {
@@ -23,11 +25,11 @@ export const CategorySortModal = ({ isOpen, categories = [], onClose, onSave }) 
         onEnd: () => {
           const newOrder = Array.from(listRef.current.children)
             .map(el => el.getAttribute('data-category-id'))
-          setSortedCategories(
-            sortedCategories.sort((a, b) =>
-              newOrder.indexOf(a.id) - newOrder.indexOf(b.id)
-            )
+          const newSortedCategories = [...sortedCategoriesRef.current].sort((a, b) =>
+            newOrder.indexOf(a.id) - newOrder.indexOf(b.id)
           )
+          setSortedCategories(newSortedCategories)
+          sortedCategoriesRef.current = newSortedCategories
         }
       })
     }
@@ -38,7 +40,7 @@ export const CategorySortModal = ({ isOpen, categories = [], onClose, onSave }) 
         sortableRef.current = null
       }
     }
-  }, [isOpen, sortedCategories])
+  }, [isOpen])
 
   const handleSave = async () => {
     const categoryIds = sortedCategories.map(cat => cat.id)
