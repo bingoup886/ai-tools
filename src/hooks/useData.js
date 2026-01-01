@@ -204,6 +204,111 @@ export const useData = () => {
     }
   }
 
+  // 标签相关方法
+  const [tags, setTags] = useState([])
+
+  const loadTags = async () => {
+    try {
+      const response = await fetch(`${API_ENDPOINT}/tags`)
+      if (response.ok) {
+        const result = await response.json()
+        setTags(result)
+      }
+    } catch (err) {
+      console.error('Error loading tags:', err)
+    }
+  }
+
+  const addTag = async (tagData) => {
+    try {
+      const response = await fetch(`${API_ENDPOINT}/tags`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(tagData)
+      })
+      if (response.ok) {
+        await loadTags()
+        return true
+      }
+      return false
+    } catch (err) {
+      console.error('Error adding tag:', err)
+      return false
+    }
+  }
+
+  const updateTag = async (tagId, tagData) => {
+    try {
+      const response = await fetch(`${API_ENDPOINT}/tags`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: tagId, ...tagData })
+      })
+      if (response.ok) {
+        await loadTags()
+        return true
+      }
+      return false
+    } catch (err) {
+      console.error('Error updating tag:', err)
+      return false
+    }
+  }
+
+  const deleteTag = async (tagId) => {
+    try {
+      const response = await fetch(`${API_ENDPOINT}/tags`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: tagId })
+      })
+      if (response.ok) {
+        await loadTags()
+        return true
+      }
+      return false
+    } catch (err) {
+      console.error('Error deleting tag:', err)
+      return false
+    }
+  }
+
+  const setToolTags = async (toolId, tagIds) => {
+    try {
+      const response = await fetch(`${API_ENDPOINT}/tool-tags`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tool_id: toolId, tag_ids: tagIds })
+      })
+      if (response.ok) {
+        await loadData()
+        return true
+      }
+      return false
+    } catch (err) {
+      console.error('Error setting tool tags:', err)
+      return false
+    }
+  }
+
+  const removeToolTag = async (toolId, tagId) => {
+    try {
+      const response = await fetch(`${API_ENDPOINT}/tool-tags`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tool_id: toolId, tag_id: tagId })
+      })
+      if (response.ok) {
+        await loadData()
+        return true
+      }
+      return false
+    } catch (err) {
+      console.error('Error removing tool tag:', err)
+      return false
+    }
+  }
+
   return {
     data,
     loading,
@@ -217,7 +322,14 @@ export const useData = () => {
     deleteTool,
     vote,
     sortCategories,
-    sortTools
+    sortTools,
+    tags,
+    loadTags,
+    addTag,
+    updateTag,
+    deleteTag,
+    setToolTags,
+    removeToolTag
   }
 }
 

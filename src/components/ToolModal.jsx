@@ -1,20 +1,24 @@
 import { useState, useEffect } from 'react'
 import { Modal } from './Modal'
+import { TagSelector } from './TagSelector'
 
-export const ToolModal = ({ isOpen, onClose, onSubmit, initialValue = null }) => {
+export const ToolModal = ({ isOpen, onClose, onSubmit, initialValue = null, availableTags = [] }) => {
   const [name, setName] = useState('')
   const [url, setUrl] = useState('')
   const [description, setDescription] = useState('')
+  const [selectedTagIds, setSelectedTagIds] = useState([])
 
   useEffect(() => {
     if (initialValue) {
       setName(initialValue.name || '')
       setUrl(initialValue.url || '')
       setDescription(initialValue.description || '')
+      setSelectedTagIds(initialValue.tags?.map(tag => tag.id) || [])
     } else {
       setName('')
       setUrl('')
       setDescription('')
+      setSelectedTagIds([])
     }
   }, [isOpen, initialValue])
 
@@ -31,12 +35,14 @@ export const ToolModal = ({ isOpen, onClose, onSubmit, initialValue = null }) =>
     onSubmit({
       name: trimmedName,
       url: trimmedUrl,
-      description: trimmedDesc
+      description: trimmedDesc,
+      tagIds: selectedTagIds
     })
 
     setName('')
     setUrl('')
     setDescription('')
+    setSelectedTagIds([])
   }
 
   const handleKeyPress = (e) => {
@@ -80,6 +86,11 @@ export const ToolModal = ({ isOpen, onClose, onSubmit, initialValue = null }) =>
           rows="3"
         />
       </div>
+      <TagSelector
+        availableTags={availableTags}
+        selectedTagIds={selectedTagIds}
+        onChange={setSelectedTagIds}
+      />
       <div className="modal-actions">
         <button className="btn btn-danger" onClick={onClose}>
           取消
