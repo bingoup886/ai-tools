@@ -162,6 +162,37 @@ export const CategoryCard = ({
               alignItems: 'center',
               flexWrap: 'wrap'
             }}>
+              {/* "所有" 虚拟标签 */}
+              <div
+                onClick={() => setSelectedTagId(null)}
+                style={{
+                  padding: '4px 12px',
+                  backgroundColor: selectedTagId === null ? '#667eea' : '#f5f5f5',
+                  color: selectedTagId === null ? '#fff' : '#667eea',
+                  borderRadius: '12px',
+                  fontSize: '12px',
+                  fontWeight: '500',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  whiteSpace: 'nowrap',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px'
+                }}
+                onMouseEnter={(e) => {
+                  if (selectedTagId !== null) {
+                    e.currentTarget.style.backgroundColor = '#667eea' + '20'
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (selectedTagId !== null) {
+                    e.currentTarget.style.backgroundColor = '#f5f5f5'
+                  }
+                }}
+              >
+                <span>所有</span>
+              </div>
+
               {uniqueTags.map(tag => (
                 <div
                   key={tag.id}
