@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import {useCallback, useState} from 'react'
 
 const CLICK_THRESHOLD = 5 // 点击次数阈值
 const RESET_TIME = 3000 // 3秒内没有新点击则重置计数

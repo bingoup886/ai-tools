@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import {useEffect, useRef, useState} from 'react'
 
 export const TagSelector = ({ availableTags = [], selectedTagIds = [], onChange, onCreateTag }) => {
   const [isOpen, setIsOpen] = useState(false)
