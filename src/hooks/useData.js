@@ -178,7 +178,12 @@ export const useData = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type: 'categories', items: categoryIds })
       })
-      return response.ok
+      if (response.ok) {
+        // 排序成功后，重新加载数据以获取最新的排序顺序
+        await loadData()
+        return true
+      }
+      return false
     } catch (err) {
       console.error('Error sorting categories:', err)
       return false
