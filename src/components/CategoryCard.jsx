@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { ToolCard } from './ToolCard'
+import { TagTabs } from './TagTabs'
 import { useData } from '../hooks/useData'
 import Sortable from 'sortablejs'
 
@@ -17,6 +18,7 @@ export const CategoryCard = ({
 }) => {
   const [isEditingName, setIsEditingName] = useState(false)
   const [editingName, setEditingName] = useState(category.name)
+  const [selectedTagId, setSelectedTagId] = useState(null)
   const inputRef = useRef(null)
   const gridRef = useRef(null)
   const sortableRef = useRef(null)
@@ -73,11 +75,19 @@ export const CategoryCard = ({
     }
   }
 
-  const sortedTools = [...(category.tools || [])].sort((a, b) => {
+  // 先排序，再过滤
+  let sortedTools = [...(category.tools || [])].sort((a, b) => {
     const scoreA = (a.upvotes || 0) - (a.downvotes || 0)
     const scoreB = (b.upvotes || 0) - (b.downvotes || 0)
     return scoreB - scoreA
   })
+
+  // 根据选中的标签进行过滤
+  if (selectedTagId) {
+    sortedTools = sortedTools.filter(tool => {
+      return tool.tags && tool.tags.some(tag => tag.id === selectedTagId)
+    })
+  }
 
   return (
     <div className={`category-section ${isEditMode ? 'draggable' : ''}`} data-category-id={category.id}>
@@ -118,6 +128,13 @@ export const CategoryCard = ({
           )}
         </div>
       </div>
+
+      {/* 标签 Tabs */}
+      <TagTabs
+        category={category}
+        onTagFilterChange={setSelectedTagId}
+      />
+
       <div className="tools-grid" ref={gridRef} data-category-id={category.id}>
         {sortedTools.length === 0 ? (
           <div className="empty-state">暂无工具</div>
