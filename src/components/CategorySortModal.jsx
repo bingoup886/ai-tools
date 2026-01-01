@@ -24,9 +24,9 @@ export const CategorySortModal = ({ isOpen, categories = [], onClose, onSave }) 
         fallbackTolerance: 3,
         onEnd: () => {
           const newOrder = Array.from(listRef.current.children)
-            .map(el => el.getAttribute('data-category-id'))
+            .map(el => String(el.getAttribute('data-category-id')))
           const newSortedCategories = [...sortedCategoriesRef.current].sort((a, b) =>
-            newOrder.indexOf(a.id) - newOrder.indexOf(b.id)
+            newOrder.indexOf(String(a.id)) - newOrder.indexOf(String(b.id))
           )
           setSortedCategories(newSortedCategories)
           sortedCategoriesRef.current = newSortedCategories
