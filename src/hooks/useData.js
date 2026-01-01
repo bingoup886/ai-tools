@@ -83,7 +83,7 @@ export const useData = () => {
     }
   }
 
-  const addTool = async (categoryId, toolData) => {
+  const addTool = async (categoryId, toolData, skipRefresh = false) => {
     try {
       const response = await fetch(`${API_ENDPOINT}/tools`, {
         method: 'POST',
@@ -94,7 +94,9 @@ export const useData = () => {
         })
       })
       if (response.ok) {
-        await loadData()
+        if (!skipRefresh) {
+          await loadData()
+        }
         return true
       }
       return false
@@ -104,7 +106,7 @@ export const useData = () => {
     }
   }
 
-  const updateTool = async (toolId, toolData) => {
+  const updateTool = async (toolId, toolData, skipRefresh = false) => {
     try {
       const response = await fetch(`${API_ENDPOINT}/tools`, {
         method: 'PUT',
@@ -112,7 +114,9 @@ export const useData = () => {
         body: JSON.stringify({ id: toolId, ...toolData })
       })
       if (response.ok) {
-        await loadData()
+        if (!skipRefresh) {
+          await loadData()
+        }
         return true
       }
       return false
