@@ -37,11 +37,6 @@ export const ToolCard = ({
             {tool.name}
           </a>
         </div>
-        {tool.description && (
-          <div style={{ fontSize: '0.85em', color: '#a0a0c0', lineHeight: '1.4' }}>
-            {tool.description}
-          </div>
-        )}
         <div className="vote-buttons">
           <button
             className={`vote-btn upvote ${currentVote === 'up' ? 'active' : ''}`}
