@@ -31,6 +31,48 @@ body {
   font-weight: 700;
 }
 
+.logo-clickable {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  user-select: none;
+  position: relative;
+}
+
+.logo-clickable:hover {
+  transform: scale(1.05);
+  opacity: 0.8;
+}
+
+.admin-hint {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #667eea;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 0.9em;
+  font-weight: 600;
+  animation: adminHintPulse 0.5s ease-out;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+@keyframes adminHintPulse {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
 .header-actions {
   display: flex;
   gap: 12px;
