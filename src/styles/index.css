@@ -6,9 +6,10 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
   min-height: 100vh;
   padding: 15px;
+  color: #e0e0e0;
 }
 
 .header {
@@ -17,14 +18,15 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: rgba(255, 255, 255, 0.95);
-  padding: 15px 25px;
+  background: rgba(20, 20, 40, 0.8);
+  padding: 20px 25px;
   border-radius: 12px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(100, 100, 200, 0.2);
 }
 
 .header h1 {
-  color: #2c3e50;
+  color: #ffffff;
   font-size: 1.5em;
   font-weight: 700;
 }
@@ -106,11 +108,11 @@ body {
 }
 
 .category-section {
-  background: rgba(255, 255, 255, 0.95);
-  padding: 18px;
+  background: transparent;
+  padding: 18px 0;
   border-radius: 12px;
   margin-bottom: 18px;
-  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: none;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -139,11 +141,22 @@ body {
 
 .category-title {
   font-size: 1.2em;
-  color: #2c3e50;
+  color: #ffffff;
   font-weight: 700;
   display: flex;
   align-items: center;
   gap: 10px;
+  position: relative;
+  padding-left: 20px;
+}
+
+.category-title::before {
+  content: '"';
+  position: absolute;
+  left: 0;
+  font-size: 1.8em;
+  color: #667eea;
+  opacity: 0.8;
 }
 
 .category-name {
@@ -189,21 +202,19 @@ body {
 }
 
 .tools-grid {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 15px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
 }
 
 .tool-card-wrapper {
   position: relative;
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
   transition: transform 0.2s ease;
-  width: auto;
-  flex-shrink: 0;
+  width: 100%;
 }
 
 .tool-card-wrapper.draggable {
@@ -220,26 +231,28 @@ body {
 }
 
 .tool-card {
-  background: transparent;
-  border: none;
-  border-radius: 0;
-  padding: 0;
-  transition: all 0.2s ease;
+  background: rgba(40, 40, 80, 0.6);
+  border: 1px solid rgba(100, 120, 200, 0.3);
+  border-radius: 12px;
+  padding: 16px;
+  transition: all 0.3s ease;
   position: relative;
   min-height: auto;
   display: flex;
-  flex-direction: row;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
   justify-content: flex-start;
-  gap: 4px;
-  width: auto;
+  gap: 8px;
+  width: 100%;
   flex-shrink: 0;
+  backdrop-filter: blur(10px);
 }
 
 .tool-card:hover {
-  transform: none;
-  box-shadow: none;
-  border-color: transparent;
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+  border-color: rgba(102, 126, 234, 0.6);
+  background: rgba(50, 50, 100, 0.8);
 }
 
 .tool-content {
@@ -306,18 +319,19 @@ body {
 }
 
 .tool-name {
-  font-size: 0.9em;
-  font-weight: 500;
-  color: #2c3e50;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-size: 1em;
+  font-weight: 600;
+  color: #ffffff;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
   flex-shrink: 0;
-  max-width: 300px;
+  max-width: 100%;
+  width: 100%;
 }
 
 .tool-name a {
-  color: #2c3e50;
+  color: #ffffff;
   text-decoration: none;
   transition: color 0.2s ease;
 }
@@ -330,57 +344,61 @@ body {
 .vote-buttons {
   display: flex;
   flex-direction: row;
-  gap: 2px;
+  gap: 8px;
   align-items: center;
   flex-shrink: 0;
+  width: 100%;
 }
 
 .vote-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1px;
-  padding: 2px 4px;
-  border: 1px solid #d0d0d0;
-  border-radius: 4px;
-  background: #f9f9f9;
+  gap: 4px;
+  padding: 6px 12px;
+  border: 1px solid rgba(100, 120, 200, 0.3);
+  border-radius: 6px;
+  background: rgba(60, 60, 120, 0.5);
   cursor: pointer;
   transition: all 0.2s ease;
-  font-size: 0.6em;
+  font-size: 0.85em;
   box-shadow: none;
   white-space: nowrap;
   min-width: auto;
-  height: 20px;
-  line-height: 1;
+  height: auto;
+  line-height: 1.4;
+  color: #b0b0d0;
+  flex: 1;
 }
 
 .vote-btn:hover {
-  transform: none;
-  background: #f0f0f0;
+  transform: scale(1.05);
+  background: rgba(80, 80, 140, 0.7);
+  border-color: rgba(102, 126, 234, 0.5);
 }
 
 .vote-btn.upvote:hover {
-  background: #e8f5e9;
+  background: rgba(76, 175, 80, 0.3);
   border-color: #4caf50;
   color: #4caf50;
 }
 
 .vote-btn.downvote:hover {
-  background: #ffebee;
+  background: rgba(244, 67, 54, 0.3);
   border-color: #f44336;
   color: #f44336;
 }
 
 .vote-btn.active.upvote {
-  background: #4caf50;
+  background: rgba(76, 175, 80, 0.6);
   border-color: #4caf50;
-  color: white;
+  color: #4caf50;
 }
 
 .vote-btn.active.downvote {
-  background: #f44336;
+  background: rgba(244, 67, 54, 0.6);
   border-color: #f44336;
-  color: white;
+  color: #f44336;
 }
 
 .modal {
