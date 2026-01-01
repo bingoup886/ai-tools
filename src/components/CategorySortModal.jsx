@@ -44,7 +44,10 @@ export const CategorySortModal = ({ isOpen, categories = [], onClose, onSave }) 
 
   const handleSave = async () => {
     const categoryIds = sortedCategories.map(cat => cat.id)
-    await onSave(categoryIds)
+    console.log('Saving category order:', categoryIds)
+    console.log('Sorted categories:', sortedCategories)
+    const result = await onSave(categoryIds)
+    console.log('Save result:', result)
     onClose()
   }
 
