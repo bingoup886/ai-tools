@@ -22,9 +22,9 @@ export const Header = ({ isEditMode, onToggleMode, onOpenSortModal, onLogoClick,
             <button
               className="btn btn-primary"
               onClick={onOpenSortModal}
-              title="排序方向"
+              title="排序分类"
             >
-              📋 排序方向
+              📋 排序分类
             </button>
             <button
               className={`btn ${isEditMode ? 'btn-success' : 'btn-primary'}`}

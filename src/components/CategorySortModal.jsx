@@ -52,9 +52,9 @@ export const CategorySortModal = ({ isOpen, categories = [], onClose, onSave }) 
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="排序方向">
+    <Modal isOpen={isOpen} onClose={onClose} title="排序分类">
       <div style={{ marginBottom: '20px' }}>
-        <p style={{ color: '#666', marginBottom: '15px' }}>拖拽下方方向来重新排序：</p>
+        <p style={{ color: '#666', marginBottom: '15px' }}>拖拽下方分类来重新排序：</p>
         <div
           ref={listRef}
           style={{
