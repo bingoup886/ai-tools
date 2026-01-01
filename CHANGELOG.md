@@ -18,14 +18,18 @@
 
 ---
 
-## [1.3.0] - 2026-01-01 16:30
+## [1.3.0] - 2026-01-01 16:45
 
 ### ✨ 新增功能
 
 - **工具标签系统**：为每个工具添加标签，支持多标签关联
 - **标签管理 API**：完整的标签 CRUD 操作（创建、获取、更新、删除）
 - **工具-标签关联**：支持工具与标签的多对多关系
-- **标签选择器组件**：在添加/编辑工具时选择标签
+- **智能标签选择器**：
+  - 支持手输标签名称
+  - 支持模糊搜索现有标签
+  - 支持实时创建新标签（输入后按 Enter 或点击创建）
+  - 动态显示"创建新标签"提示
 - **标签徽章显示**：在工具卡片上显示标签，支持自定义颜色和图标
 
 ### 🏗️ 技术改进
@@ -34,14 +38,18 @@
 - 新增后端 API：`/api/tags`（标签管理）和 `/api/tool-tags`（工具标签关联）
 - 修改 `/api/categories` 返回工具的标签信息
 - 扩展 `useData` hook 添加标签相关方法
-- 新增 `TagBadge.jsx` 和 `TagSelector.jsx` 组件
+- 增强 `TagSelector.jsx` 组件支持：
+  - 模糊搜索功能
+  - 动态标签创建
+  - 外部点击自动关闭
+  - 完整的键盘交互（Enter 创建、Escape 关闭）
 
 ### 📦 新增文件
 
 - `functions/api/tags.js` - 标签 API
 - `functions/api/tool-tags.js` - 工具标签关联 API
 - `src/components/TagBadge.jsx` - 标签徽章组件
-- `src/components/TagSelector.jsx` - 标签选择器组件
+- `src/components/TagSelector.jsx` - 增强的标签选择器组件
 
 ---
 
