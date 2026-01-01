@@ -5,7 +5,8 @@ export async function onRequestPost(context) {
     const { request, env } = context;
 
     try {
-        const { type, items } = await request.json();
+        const body = await request.json();
+        const { type, items, category_id } = body;
 
         if (!type || !items || !Array.isArray(items)) {
             return new Response(JSON.stringify({ error: '参数错误' }), {
@@ -28,8 +29,6 @@ export async function onRequestPost(context) {
             }
         } else if (type === 'tools') {
             // 更新工具排序
-            const { category_id } = await request.json();
-
             if (!category_id) {
                 return new Response(JSON.stringify({ error: '缺少分类ID' }), {
                     status: 400,
