@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react'
-import { TagBadge } from './TagBadge'
 
 export const TagSelector = ({ availableTags = [], selectedTagIds = [], onChange, onCreateTag }) => {
   const [isOpen, setIsOpen] = useState(false)
@@ -98,12 +97,43 @@ export const TagSelector = ({ availableTags = [], selectedTagIds = [], onChange,
       {selectedTags.length > 0 && (
         <div style={{ marginBottom: '12px', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
           {selectedTags.map(tag => (
-            <TagBadge
+            <div
               key={tag.id}
-              tag={tag}
-              isRemovable={true}
-              onRemove={handleTagRemove}
-            />
+              style={{
+                backgroundColor: tag.color || '#667eea',
+                color: '#fff',
+                padding: '4px 8px',
+                borderRadius: '4px',
+                fontSize: '12px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px',
+                whiteSpace: 'nowrap'
+              }}
+              title={tag.description}
+            >
+              {tag.icon && <span>{tag.icon}</span>}
+              <span>{tag.name}</span>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  handleTagRemove(tag.id)
+                }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#fff',
+                  cursor: 'pointer',
+                  padding: '0',
+                  marginLeft: '2px',
+                  fontSize: '14px',
+                  lineHeight: '1'
+                }}
+                title="移除标签"
+              >
+                ×
+              </button>
+            </div>
           ))}
         </div>
       )}
@@ -202,7 +232,23 @@ export const TagSelector = ({ availableTags = [], selectedTagIds = [], onChange,
                     e.currentTarget.style.backgroundColor = 'transparent'
                   }}
                 >
-                  <TagBadge tag={tag} />
+                  <div
+                    style={{
+                      backgroundColor: tag.color || '#667eea',
+                      color: '#fff',
+                      padding: '4px 8px',
+                      borderRadius: '4px',
+                      fontSize: '12px',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      whiteSpace: 'nowrap'
+                    }}
+                    title={tag.description}
+                  >
+                    {tag.icon && <span>{tag.icon}</span>}
+                    <span>{tag.name}</span>
+                  </div>
                 </div>
               ))
             ) : !canCreateNewTag && searchTrimmed.length > 0 ? (
