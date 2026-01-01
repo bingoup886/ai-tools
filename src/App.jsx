@@ -32,6 +32,7 @@ function App() {
     sortTools,
     tags,
     loadTags,
+    addTag,
     setToolTags
   } = useData()
 
@@ -140,6 +141,26 @@ function App() {
     }
   }
 
+  const handleCreateTag = async (tagData) => {
+    try {
+      const success = await addTag(tagData)
+      if (success) {
+        // 标签创建成功后，loadTags 会被调用，返回新标签
+        // 这里需要找到新创建的标签并返回
+        const response = await fetch('/api/tags')
+        if (response.ok) {
+          const allTags = await response.json()
+          const newTag = allTags.find(tag => tag.slug === tagData.slug)
+          return newTag
+        }
+      }
+      return null
+    } catch (err) {
+      console.error('创建标签失败:', err)
+      return null
+    }
+  }
+
   if (loading) {
     return (
       <div>
@@ -233,6 +254,7 @@ function App() {
         onSubmit={handleSubmitTool}
         initialValue={editingTool}
         availableTags={tags}
+        onCreateTag={handleCreateTag}
       />
     </div>
   )
