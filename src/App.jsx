@@ -94,32 +94,43 @@ function App() {
   const handleSubmitTool = async (toolData) => {
     const { tagIds, ...toolInfo } = toolData
 
-    if (editingTool) {
-      const success = await updateTool(editingTool.id, toolInfo)
-      if (success && tagIds) {
-        await setToolTags(editingTool.id, tagIds)
-      }
-      if (!success) {
-        alert('更新工具失败')
-      }
-    } else {
-      const result = await addTool(currentCategoryId, toolInfo)
-      if (result && tagIds && tagIds.length > 0) {
-        // 获取新添加工具的 ID
-        const response = await fetch('/api/categories')
-        if (response.ok) {
-          const data = await response.json()
-          const category = data.categories.find(c => c.id === currentCategoryId)
-          if (category && category.tools.length > 0) {
-            const newTool = category.tools[category.tools.length - 1]
-            await setToolTags(newTool.id, tagIds)
+    try {
+      if (editingTool) {
+        const success = await updateTool(editingTool.id, toolInfo)
+        if (success && tagIds) {
+          await setToolTags(editingTool.id, tagIds)
+        }
+        if (!success) {
+          alert('更新工具失败')
+          return
+        }
+      } else {
+        const result = await addTool(currentCategoryId, toolInfo)
+        if (!result) {
+          alert('添加工具失败')
+          return
+        }
+
+        if (tagIds && tagIds.length > 0) {
+          // 获取新添加工具的 ID
+          const response = await fetch('/api/categories')
+          if (response.ok) {
+            const data = await response.json()
+            const category = data.categories.find(c => c.id === currentCategoryId)
+            if (category && category.tools.length > 0) {
+              const newTool = category.tools[category.tools.length - 1]
+              await setToolTags(newTool.id, tagIds)
+            }
           }
         }
       }
-      if (!result) {
-        alert('添加工具失败')
-      }
+    } catch (err) {
+      console.error('保存工具失败:', err)
+      alert('保存工具失败，请重试')
+      return
     }
+
+    // 只在所有操作成功后才关闭弹框
     setShowToolModal(false)
     setEditingTool(null)
     setCurrentCategoryId(null)
