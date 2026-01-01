@@ -32,17 +32,20 @@ export const ToolModal = ({ isOpen, onClose, onSubmit, initialValue = null, avai
       return
     }
 
+    // 立即关闭弹框，让异步操作在后台处理
+    setName('')
+    setUrl('')
+    setDescription('')
+    setSelectedTagIds([])
+    onClose()
+
+    // 异步提交数据
     onSubmit({
       name: trimmedName,
       url: trimmedUrl,
       description: trimmedDesc,
       tagIds: selectedTagIds
     })
-
-    setName('')
-    setUrl('')
-    setDescription('')
-    setSelectedTagIds([])
   }
 
   const handleKeyPress = (e) => {
