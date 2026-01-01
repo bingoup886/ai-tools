@@ -43,7 +43,7 @@ export const ToolCard = ({
             <button
               className="delete-btn"
               onClick={onDelete}
-              style={{ position: 'absolute', top: '8px', left: '8px', zIndex: 3 }}
+              style={{ position: 'absolute', top: '4px', left: '4px', zIndex: 3 }}
             >
               ×
             </button>
@@ -51,27 +51,28 @@ export const ToolCard = ({
               className="edit-tool-btn"
               onClick={onEdit}
               title="编辑工具"
+              style={{ top: '4px', right: '4px' }}
             >
               ✏️
             </button>
           </>
         )}
-      </div>
-      <div className="vote-buttons">
-        <button
-          className={`vote-btn upvote ${currentVote === 'up' ? 'active' : ''}`}
-          onClick={() => handleVote('up')}
-          title="点赞"
-        >
-          👍 {tool.upvotes || 0}
-        </button>
-        <button
-          className={`vote-btn downvote ${currentVote === 'down' ? 'active' : ''}`}
-          onClick={() => handleVote('down')}
-          title="点踩"
-        >
-          👎 {tool.downvotes || 0}
-        </button>
+        <div className="vote-buttons">
+          <button
+            className={`vote-btn upvote ${currentVote === 'up' ? 'active' : ''}`}
+            onClick={() => handleVote('up')}
+            title="点赞"
+          >
+            👍{tool.upvotes || 0}
+          </button>
+          <button
+            className={`vote-btn downvote ${currentVote === 'down' ? 'active' : ''}`}
+            onClick={() => handleVote('down')}
+            title="点踩"
+          >
+            👎{tool.downvotes || 0}
+          </button>
+        </div>
       </div>
     </div>
   )

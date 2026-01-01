@@ -190,15 +190,15 @@ body {
 
 .tools-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px;
 }
 
 .tool-card-wrapper {
   position: relative;
   display: flex;
-  align-items: center;
-  gap: 0;
+  flex-direction: column;
+  gap: 4px;
   transition: transform 0.2s ease;
 }
 
@@ -212,26 +212,28 @@ body {
 }
 
 .tool-card-wrapper.drag-over {
-  transform: translateX(10px);
+  transform: translateY(-3px);
 }
 
 .tool-card {
   background: white;
-  border: 2px solid #e0e0e0;
-  border-radius: 10px;
-  padding: 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 6px;
   transition: all 0.3s ease;
   position: relative;
-  min-height: 70px;
+  min-height: auto;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   flex: 1;
+  gap: 4px;
 }
 
 .tool-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
   border-color: #667eea;
 }
 
@@ -239,16 +241,16 @@ body {
   position: absolute;
   bottom: 100%;
   left: 50%;
-  transform: translateX(-50%) translateY(-10px);
+  transform: translateX(-50%) translateY(-8px);
   background: rgba(44, 62, 80, 0.95);
   color: white;
-  padding: 12px 16px;
-  border-radius: 8px;
-  font-size: 0.85em;
-  line-height: 1.5;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 0.8em;
+  line-height: 1.4;
   white-space: normal;
-  max-width: 300px;
-  min-width: 200px;
+  max-width: 250px;
+  min-width: 180px;
   opacity: 0;
   visibility: hidden;
   transition: all 0.3s ease;
@@ -263,41 +265,42 @@ body {
   top: 100%;
   left: 50%;
   transform: translateX(-50%);
-  border: 6px solid transparent;
+  border: 5px solid transparent;
   border-top-color: rgba(44, 62, 80, 0.95);
 }
 
 .tool-card-wrapper:hover .tool-description {
   opacity: 1;
   visibility: visible;
-  transform: translateX(-50%) translateY(-5px);
+  transform: translateX(-50%) translateY(-4px);
 }
 
 .tool-rank {
   position: absolute;
-  top: -8px;
-  left: -8px;
+  top: -6px;
+  left: -6px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  width: 26px;
-  height: 26px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 0.9em;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  font-size: 0.8em;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   z-index: 2;
 }
 
 .tool-name {
-  font-size: 1em;
+  font-size: 0.85em;
   font-weight: 600;
   color: #2c3e50;
   word-break: break-word;
   text-align: center;
-  padding: 0 8px;
+  padding: 0 4px;
+  line-height: 1.3;
 }
 
 .tool-name a {
@@ -313,29 +316,32 @@ body {
 
 .vote-buttons {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  flex-direction: row;
+  gap: 3px;
+  width: 100%;
+  justify-content: center;
 }
 
 .vote-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  padding: 3px 6px;
+  gap: 1px;
+  padding: 2px 4px;
   border: 1px solid #e0e0e0;
-  border-radius: 10px;
+  border-radius: 6px;
   background: white;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-size: 0.7em;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  font-size: 0.65em;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
   white-space: nowrap;
-  min-width: 40px;
+  flex: 1;
+  min-width: 32px;
 }
 
 .vote-btn:hover {
-  transform: scale(1.08);
+  transform: scale(1.05);
 }
 
 .vote-btn.upvote:hover {
@@ -454,33 +460,34 @@ body {
 }
 
 .tool-card .delete-btn {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.2em;
+  font-size: 1.1em;
   font-weight: bold;
 }
 
 .edit-tool-btn {
   position: absolute;
-  top: 8px;
-  right: 8px;
+  top: 4px;
+  right: 4px;
   background: #667eea;
   color: white;
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   border: none;
   border-radius: 50%;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.85em;
+  font-size: 0.75em;
   transition: all 0.2s ease;
   z-index: 2;
+  padding: 0;
 }
 
 .edit-tool-btn:hover {
@@ -495,6 +502,12 @@ body {
   font-size: 1em;
 }
 
+@media (max-width: 1024px) {
+  .tools-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+}
+
 @media (max-width: 768px) {
   .header {
     flex-direction: column;
@@ -502,7 +515,19 @@ body {
   }
 
   .tools-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .tools-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 6px;
+  }
+
+  .category-section {
+    padding: 12px;
+    margin-bottom: 12px;
   }
 }
 
