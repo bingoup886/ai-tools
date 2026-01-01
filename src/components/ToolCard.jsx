@@ -1,4 +1,5 @@
 import {useVote} from '../hooks/useVote'
+import { TagBadge } from './TagBadge'
 
 export const ToolCard = ({
   tool,
@@ -30,6 +31,13 @@ export const ToolCard = ({
     <div className={`tool-card-wrapper ${isEditMode ? 'draggable' : ''}`} {...draggableProps}>
       {tool.description && (
         <div className="tool-description">{tool.description}</div>
+      )}
+      {tool.tags && tool.tags.length > 0 && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginBottom: '8px' }}>
+          {tool.tags.map(tag => (
+            <TagBadge key={tag.id} tag={tag} />
+          ))}
+        </div>
       )}
       <div className="tool-card">
         <div className="tool-content-wrapper">

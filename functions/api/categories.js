@@ -11,7 +11,7 @@ export async function onRequestGet(context) {
 
         const categories = categoriesResult.results || [];
 
-        // 为每个分类获取工具和投票统计
+        // 为每个分类获取工具、投票统计和标签
         for (const category of categories) {
             const toolsResult = await env.DB.prepare(`
                 SELECT
@@ -25,7 +25,22 @@ export async function onRequestGet(context) {
                 ORDER BY t.sort_order ASC
             `).bind(category.id).all();
 
-            category.tools = toolsResult.results || [];
+            const tools = toolsResult.results || [];
+
+            // 为每个工具获取标签
+            for (const tool of tools) {
+                const tagsResult = await env.DB.prepare(`
+                    SELECT t.id, t.name, t.slug, t.description, t.color, t.icon
+                    FROM tags t
+                    INNER JOIN tool_tags tt ON t.id = tt.tag_id
+                    WHERE tt.tool_id = ?
+                    ORDER BY t.sort_order ASC
+                `).bind(tool.id).all();
+
+                tool.tags = tagsResult.results || [];
+            }
+
+            category.tools = tools;
         }
 
         return new Response(JSON.stringify({ categories }), {

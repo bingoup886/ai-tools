@@ -29,8 +29,16 @@ function App() {
     deleteTool,
     vote,
     sortCategories,
-    sortTools
+    sortTools,
+    tags,
+    loadTags,
+    setToolTags
   } = useData()
+
+  // 加载标签
+  useEffect(() => {
+    loadTags()
+  }, [])
 
 
   const handleToggleMode = () => {
@@ -83,14 +91,31 @@ function App() {
   }
 
   const handleSubmitTool = async (toolData) => {
+    const { tagIds, ...toolInfo } = toolData
+
     if (editingTool) {
-      const success = await updateTool(editingTool.id, toolData)
+      const success = await updateTool(editingTool.id, toolInfo)
+      if (success && tagIds) {
+        await setToolTags(editingTool.id, tagIds)
+      }
       if (!success) {
         alert('更新工具失败')
       }
     } else {
-      const success = await addTool(currentCategoryId, toolData)
-      if (!success) {
+      const result = await addTool(currentCategoryId, toolInfo)
+      if (result && tagIds && tagIds.length > 0) {
+        // 获取新添加工具的 ID
+        const response = await fetch('/api/categories')
+        if (response.ok) {
+          const data = await response.json()
+          const category = data.categories.find(c => c.id === currentCategoryId)
+          if (category && category.tools.length > 0) {
+            const newTool = category.tools[category.tools.length - 1]
+            await setToolTags(newTool.id, tagIds)
+          }
+        }
+      }
+      if (!result) {
         alert('添加工具失败')
       }
     }
@@ -207,6 +232,7 @@ function App() {
         }}
         onSubmit={handleSubmitTool}
         initialValue={editingTool}
+        availableTags={tags}
       />
     </div>
   )
