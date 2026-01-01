@@ -43,16 +43,6 @@ export async function onRequestPost(context) {
                 await env.DB.prepare(`
                     DELETE FROM votes WHERE id = ?
                 `).bind(existingVote.id).run();
-
-                return new Response(JSON.stringify({
-                    success: true,
-                    action: 'removed'
-                }), {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Access-Control-Allow-Origin': '*'
-                    }
-                });
             } else {
                 // 更改投票
                 await env.DB.prepare(`
@@ -60,28 +50,28 @@ export async function onRequestPost(context) {
                     SET vote_type = ?, updated_at = CURRENT_TIMESTAMP
                     WHERE id = ?
                 `).bind(vote_type, existingVote.id).run();
-
-                return new Response(JSON.stringify({
-                    success: true,
-                    action: 'changed'
-                }), {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Access-Control-Allow-Origin': '*'
-                    }
-                });
             }
+        } else {
+            // 新增投票
+            await env.DB.prepare(`
+                INSERT INTO votes (tool_id, user_id, user_name, vote_type, ip_address, user_agent)
+                VALUES (?, ?, ?, ?, ?, ?)
+            `).bind(tool_id, finalUserId, finalUserName, vote_type, ip, userAgent).run();
         }
 
-        // 新增投票
-        await env.DB.prepare(`
-            INSERT INTO votes (tool_id, user_id, user_name, vote_type, ip_address, user_agent)
-            VALUES (?, ?, ?, ?, ?, ?)
-        `).bind(tool_id, finalUserId, finalUserName, vote_type, ip, userAgent).run();
+        // 获取更新后的投票统计
+        const voteCounts = await env.DB.prepare(`
+            SELECT
+                COALESCE(SUM(CASE WHEN vote_type = 'up' THEN 1 ELSE 0 END), 0) as upvotes,
+                COALESCE(SUM(CASE WHEN vote_type = 'down' THEN 1 ELSE 0 END), 0) as downvotes
+            FROM votes
+            WHERE tool_id = ?
+        `).bind(tool_id).first();
 
         return new Response(JSON.stringify({
             success: true,
-            action: 'added'
+            upvotes: voteCounts.upvotes,
+            downvotes: voteCounts.downvotes
         }), {
             headers: {
                 'Content-Type': 'application/json',
