@@ -32,10 +32,12 @@ export const ToolCard = ({
         <div className="tool-description">{tool.description}</div>
       )}
       <div className="tool-card">
-        <div className="tool-name">
-          <a href={tool.url} target="_blank" rel="noopener noreferrer" title={tool.url}>
-            {tool.name}
-          </a>
+        <div className="tool-content-wrapper">
+          <div className="tool-name">
+            <a href={tool.url} target="_blank" rel="noopener noreferrer" title={tool.url}>
+              {tool.name}
+            </a>
+          </div>
         </div>
         <div className="vote-buttons">
           <button
