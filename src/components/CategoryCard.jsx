@@ -118,7 +118,7 @@ export const CategoryCard = ({
         <div className="category-header" style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '16px',
+          gap: '0',
           flex: 1
         }}>
           <div className="category-title">
@@ -160,7 +160,8 @@ export const CategoryCard = ({
               display: 'flex',
               gap: '8px',
               alignItems: 'center',
-              flexWrap: 'wrap'
+              flexWrap: 'wrap',
+              marginLeft: '30px'
             }}>
               {/* "所有" 虚拟标签 */}
               <div
