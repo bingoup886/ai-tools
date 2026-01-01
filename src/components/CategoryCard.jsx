@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
 import { ToolCard } from './ToolCard'
-import { TagTabs } from './TagTabs'
 import { useData } from '../hooks/useData'
 import Sortable from 'sortablejs'
 
@@ -89,33 +88,119 @@ export const CategoryCard = ({
     })
   }
 
+  // 提取该分类下所有标签
+  const allTags = new Map()
+  const tools = category.tools || []
+  tools.forEach(tool => {
+    if (tool.tags && Array.isArray(tool.tags)) {
+      tool.tags.forEach(tag => {
+        if (!allTags.has(tag.id)) {
+          allTags.set(tag.id, tag)
+        }
+      })
+    }
+  })
+  const uniqueTags = Array.from(allTags.values())
+
   return (
-    <div className={`category-section ${isEditMode ? 'draggable' : ''}`} data-category-id={category.id}>
-      <div className="category-header">
-        <div className="category-title">
-          {isEditingName ? (
-            <input
-              ref={inputRef}
-              type="text"
-              className="category-name-input"
-              value={editingName}
-              onChange={(e) => setEditingName(e.target.value)}
-              onKeyDown={handleKeyPress}
-              onBlur={handleNameEdit}
-            />
-          ) : (
-            <>
-              <span
-                className={`category-name ${isEditMode ? 'editable' : ''}`}
-                onClick={() => isEditMode && setIsEditingName(true)}
-              >
-                {category.name}
-              </span>
-              {isEditMode && <span className="edit-icon">✏️</span>}
-            </>
+    <div className={`category-section ${isEditMode ? 'draggable' : ''}`} data-category-id={category.id} style={{
+      borderBottom: '1px solid #f0f0f0',
+      paddingBottom: '24px',
+      marginBottom: '24px'
+    }}>
+      {/* Category 标题和标签栏 */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: '16px'
+      }}>
+        <div className="category-header" style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '16px',
+          flex: 1
+        }}>
+          <div className="category-title">
+            {isEditingName ? (
+              <input
+                ref={inputRef}
+                type="text"
+                className="category-name-input"
+                value={editingName}
+                onChange={(e) => setEditingName(e.target.value)}
+                onKeyDown={handleKeyPress}
+                onBlur={handleNameEdit}
+                style={{
+                  fontSize: '20px',
+                  fontWeight: '600'
+                }}
+              />
+            ) : (
+              <>
+                <span
+                  className={`category-name ${isEditMode ? 'editable' : ''}`}
+                  onClick={() => isEditMode && setIsEditingName(true)}
+                  style={{
+                    fontSize: '20px',
+                    fontWeight: '600',
+                    cursor: isEditMode ? 'pointer' : 'default'
+                  }}
+                >
+                  {category.name}
+                </span>
+                {isEditMode && <span className="edit-icon">✏️</span>}
+              </>
+            )}
+          </div>
+
+          {/* 标签展示 */}
+          {uniqueTags.length > 0 && (
+            <div style={{
+              display: 'flex',
+              gap: '8px',
+              alignItems: 'center',
+              flexWrap: 'wrap'
+            }}>
+              {uniqueTags.map(tag => (
+                <div
+                  key={tag.id}
+                  onClick={() => setSelectedTagId(selectedTagId === tag.id ? null : tag.id)}
+                  style={{
+                    padding: '4px 12px',
+                    backgroundColor: selectedTagId === tag.id ? tag.color || '#667eea' : '#f5f5f5',
+                    color: selectedTagId === tag.id ? '#fff' : tag.color || '#667eea',
+                    borderRadius: '12px',
+                    fontSize: '12px',
+                    fontWeight: '500',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    whiteSpace: 'nowrap',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (selectedTagId !== tag.id) {
+                      e.currentTarget.style.backgroundColor = (tag.color || '#667eea') + '20'
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (selectedTagId !== tag.id) {
+                      e.currentTarget.style.backgroundColor = '#f5f5f5'
+                    }
+                  }}
+                >
+                  {tag.icon && <span>{tag.icon}</span>}
+                  <span>{tag.name}</span>
+                </div>
+              ))}
+            </div>
           )}
         </div>
-        <div className="category-actions">
+
+        {/* 操作按钮 */}
+        <div className="category-actions" style={{ marginLeft: '16px' }}>
           {isEditMode && (
             <>
               <button className="btn btn-primary btn-small" onClick={() => onAddTool(category.id)}>
@@ -128,12 +213,6 @@ export const CategoryCard = ({
           )}
         </div>
       </div>
-
-      {/* 标签 Tabs */}
-      <TagTabs
-        category={category}
-        onTagFilterChange={setSelectedTagId}
-      />
 
       <div className="tools-grid" ref={gridRef} data-category-id={category.id}>
         {sortedTools.length === 0 ? (
