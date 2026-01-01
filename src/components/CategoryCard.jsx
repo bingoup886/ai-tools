@@ -118,8 +118,7 @@ export const CategoryCard = ({
         <div className="category-header" style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '0',
-          flex: 1
+          gap: '0'
         }}>
           <div className="category-title">
             {isEditingName ? (
