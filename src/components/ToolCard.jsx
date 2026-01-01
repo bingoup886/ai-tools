@@ -1,4 +1,4 @@
-import { useVote } from '../hooks/useVote'
+import {useVote} from '../hooks/useVote'
 
 export const ToolCard = ({
   tool,
