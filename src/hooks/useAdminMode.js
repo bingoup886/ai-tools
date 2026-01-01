@@ -28,10 +28,18 @@ export const useAdminMode = () => {
     }
   }, [clickCount, lastClickTime])
 
+  // 重置点击计数
+  const resetClickCount = useCallback(() => {
+    setClickCount(0)
+    setLastClickTime(0)
+    setShowAdminHint(false)
+  }, [])
+
   return {
     clickCount,
     showAdminHint,
     handleLogoClick,
+    resetClickCount,
     isAdminModeTriggered: clickCount >= CLICK_THRESHOLD
   }
 }

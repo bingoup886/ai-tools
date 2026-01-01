@@ -18,7 +18,7 @@ function App() {
   const [editingTool, setEditingTool] = useState(null)
   const categoriesContainerRef = useRef(null)
 
-  const { handleLogoClick, showAdminHint, isAdminModeTriggered } = useAdminMode()
+  const { handleLogoClick, showAdminHint, isAdminModeTriggered, resetClickCount } = useAdminMode()
 
   const {
     data,
@@ -56,6 +56,8 @@ function App() {
   const handleToggleMode = () => {
     if (isEditMode) {
       setIsEditMode(false)
+      // 退出维护模式时重置点击计数，避免自动弹出密码框
+      resetClickCount()
     } else {
       setShowPasswordModal(true)
     }
