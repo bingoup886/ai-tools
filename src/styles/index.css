@@ -69,13 +69,44 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: rgba(255, 255, 255, 0.95);
-    padding: 20px 25px;
+    background: rgba(255, 255, 255, 0.8); /* 更透明 */
+    backdrop-filter: blur(12px); /* 毛玻璃效果 */
+    padding: 15px 25px; /* 更窄一点 */
     border-radius: 12px;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
     border: 1px solid rgba(0, 0, 0, 0.05);
     position: relative; /* 确保在 banner 之上 */
     z-index: 10;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(0, 0, 0, 0.05);
+    padding: 8px 16px;
+    border-radius: 20px;
+    width: 300px;
+    transition: all 0.3s;
+}
+
+.search-bar:focus-within {
+    background: rgba(0, 0, 0, 0.08);
+    width: 350px;
+}
+
+.search-icon {
+    font-size: 1.2em;
+    opacity: 0.6;
+}
+
+.search-input {
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 1em;
+    color: #2c3e50;
+    width: 100%;
 }
 
 .header h1 {
