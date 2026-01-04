@@ -77,8 +77,21 @@ export const CategoryCard = ({
 				return tool.tags && tool.tags.some(tag => tag.id === selectedTagId)
 			})
 		}
+
+		if (searchQuery) {
+			const query = searchQuery.toLowerCase()
+			tools = tools.filter(tool =>
+				tool.name.toLowerCase().includes(query) ||
+				(tool.description && tool.description.toLowerCase().includes(query))
+			)
+		}
+
 		return tools
-	}, [category.tools, selectedTagId])
+	}, [category.tools, selectedTagId, searchQuery])
+
+	if (searchQuery && sortedTools.length === 0) {
+		return null
+	}
 
 	return (
 		<div className={`category-section ${isEditMode ? 'draggable' : ''}`} data-category-id={category.id}>

@@ -1,6 +1,6 @@
 import React from 'react'
 
-export const Banner = ({onLogoClick, showAdminHint}) => {
+export const Banner = ({onLogoClick, showAdminHint, onSearch}) => {
 	return (
 		<div className="site-banner">
 			<div className="banner-content">
@@ -14,7 +14,12 @@ export const Banner = ({onLogoClick, showAdminHint}) => {
         <p>发现 · 分享 · 创造 —— 极客们的专属工具箱</p>
         <div className="search-bar">
           <span className="search-icon">🔍</span>
-          <input type="text" placeholder="搜索工具..." className="search-input"/>
+          <input
+            type="text"
+            placeholder="搜索工具..."
+            className="search-input"
+            onChange={(e) => onSearch(e.target.value)}
+          />
         </div>
       </div>
       {showAdminHint && (
