@@ -8,8 +8,59 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
     background: #ffffff;
     min-height: 100vh;
-    padding: 15px;
+    padding: 0; /* 移除 body padding，让 banner 全宽 */
     color: #2c3e50;
+}
+
+/* Banner 样式 */
+.site-banner {
+    width: 100%;
+    height: 350px;
+    /* 使用一个默认的占位图，提示用户替换 */
+    background-image: url('https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&auto=format&fit=crop&w=2072&q=80');
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    position: relative;
+    margin-bottom: -60px; /* 让下面的 Header 浮动上来 */
+}
+
+/* 如果用户放了本地图片，优先使用本地图片 */
+/* 注意：这需要用户手动修改 CSS 或者确保图片路径正确 */
+/* .site-banner { background-image: url('/banner.png'); } */
+
+.site-banner::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3); /* 遮罩层 */
+}
+
+.banner-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    transform: translateY(-20px);
+}
+
+.banner-content h1 {
+    font-size: 3.5em;
+    margin-bottom: 10px;
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    font-weight: 800;
+}
+
+.banner-content p {
+    font-size: 1.5em;
+    opacity: 0.95;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    font-weight: 500;
 }
 
 .header {
@@ -23,6 +74,8 @@ body {
     border-radius: 12px;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
     border: 1px solid rgba(0, 0, 0, 0.05);
+    position: relative; /* 确保在 banner 之上 */
+    z-index: 10;
 }
 
 .header h1 {
@@ -134,6 +187,7 @@ body {
 .container {
     max-width: 1400px;
     margin: 0 auto;
+    padding: 0 15px 40px; /* 恢复 padding */
 }
 
 .add-category-section {
@@ -630,6 +684,14 @@ body {
         padding: 15px;
         margin-bottom: 15px;
     }
+
+    .site-banner {
+        height: 250px;
+    }
+
+    .banner-content h1 {
+        font-size: 2.5em;
+    }
 }
 
 @media (max-width: 480px) {
@@ -645,6 +707,18 @@ body {
     .vote-btn {
         font-size: 0.55em;
         padding: 1px 3px;
+    }
+
+    .site-banner {
+        height: 200px;
+    }
+
+    .banner-content h1 {
+        font-size: 2em;
+    }
+
+    .banner-content p {
+        font-size: 1em;
     }
 }
 

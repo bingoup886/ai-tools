@@ -1,5 +1,6 @@
 import {useEffect, useRef, useState} from 'react'
 import {Header} from './components/Header'
+import {Banner} from './components/Banner'
 import {CategoryCard} from './components/CategoryCard'
 import {PasswordModal} from './components/PasswordModal'
 import {CategoryModal} from './components/CategoryModal'
@@ -226,6 +227,7 @@ function App() {
 
 	return (
 		<div>
+			<Banner />
 			<Header
 				isEditMode={isEditMode}
 				onToggleMode={handleToggleMode}
