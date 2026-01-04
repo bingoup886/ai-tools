@@ -17,6 +17,7 @@ function App() {
 	const [showToolModal, setShowToolModal] = useState(false)
 	const [currentCategoryId, setCurrentCategoryId] = useState(null)
 	const [editingTool, setEditingTool] = useState(null)
+	const [searchQuery, setSearchQuery] = useState('')
 	const categoriesContainerRef = useRef(null)
 
 	const {handleLogoClick, showAdminHint, isAdminModeTriggered, resetClickCount} = useAdminMode()
@@ -262,6 +263,7 @@ function App() {
 								onVote={handleVote}
 								onUpdateCategoryName={handleUpdateCategoryName}
 								onSortTools={sortTools}
+								searchQuery={searchQuery}
 							/>
 						))
 					) : (
