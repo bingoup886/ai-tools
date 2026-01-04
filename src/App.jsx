@@ -231,6 +231,7 @@ function App() {
 			<Banner
 				onLogoClick={handleLogoClick}
 				showAdminHint={showAdminHint}
+				onSearch={setSearchQuery}
 			/>
 			<Header
 				isEditMode={isEditMode}
