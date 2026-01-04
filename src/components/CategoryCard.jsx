@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState, useMemo} from 'react'
+import {useEffect, useMemo, useRef, useState} from 'react'
 import {ToolCard} from './ToolCard'
 import {useSortable} from '../hooks/useSortable'
 
@@ -12,7 +12,8 @@ export const CategoryCard = ({
 	                             onDeleteTool,
 	                             onVote,
 	                             onUpdateCategoryName,
-	                             onSortTools
+	                             onSortTools,
+	                             searchQuery
                              }) => {
 	const [isEditingName, setIsEditingName] = useState(false)
 	const [editingName, setEditingName] = useState(category.name)
