@@ -1,10 +1,6 @@
 export const Header = ({isEditMode, onToggleMode, onOpenSortModal}) => {
 	return (
 		<div className="header">
-			<div className="search-bar">
-				<span className="search-icon">🔍</span>
-				<input type="text" placeholder="搜索工具..." className="search-input"/>
-			</div>
 			<div className="header-actions">
 				{isEditMode && (
 					<>

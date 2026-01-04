@@ -67,43 +67,53 @@ body {
     max-width: 1400px;
     margin: 0 auto 20px;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end; /* 靠右对齐 */
     align-items: center;
     background: transparent;
     padding: 0 25px;
     position: relative; /* 确保在 banner 之上 */
     z-index: 10;
+    height: 50px; /* 给一个固定高度占位，避免塌陷 */
 }
 
 .search-bar {
     display: flex;
     align-items: center;
     gap: 10px;
-    background: #ffffff;
-    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+    padding: 12px 24px;
     border-radius: 50px;
-    width: 300px;
+    width: 400px;
     transition: all 0.3s;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin: 25px auto 0; /* 居中并与上方文字保持距离 */
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .search-bar:focus-within {
-    width: 400px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    width: 500px;
+    background: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
 }
 
 .search-icon {
     font-size: 1.2em;
-    opacity: 0.6;
+    opacity: 0.8;
+    color: white;
 }
 
 .search-input {
     border: none;
     background: transparent;
     outline: none;
-    font-size: 1em;
-    color: #2c3e50;
+    font-size: 1.1em;
+    color: white;
     width: 100%;
+}
+
+.search-input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
 }
 
 .header h1 {
