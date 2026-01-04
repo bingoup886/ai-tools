@@ -201,7 +201,11 @@ export const useData = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type: 'tools', category_id: categoryId, items: toolIds })
       })
-      return response.ok
+      if (response.ok) {
+        await loadData()
+        return true
+      }
+      return false
     } catch (err) {
       console.error('Error sorting tools:', err)
       return false
