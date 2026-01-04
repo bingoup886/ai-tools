@@ -69,12 +69,8 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: rgba(255, 255, 255, 0.8); /* 更透明 */
-    backdrop-filter: blur(12px); /* 毛玻璃效果 */
-    padding: 15px 25px; /* 更窄一点 */
-    border-radius: 12px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    background: transparent;
+    padding: 0 25px;
     position: relative; /* 确保在 banner 之上 */
     z-index: 10;
 }
@@ -83,16 +79,17 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
-    background: rgba(0, 0, 0, 0.05);
-    padding: 8px 16px;
-    border-radius: 20px;
+    background: #ffffff;
+    padding: 10px 20px;
+    border-radius: 50px;
     width: 300px;
     transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .search-bar:focus-within {
-    background: rgba(0, 0, 0, 0.08);
-    width: 350px;
+    width: 400px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
 .search-icon {
