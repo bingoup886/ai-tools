@@ -68,13 +68,9 @@ export const CategoryCard = ({
     return Array.from(allTags.values())
   }, [category.tools])
 
-  // 先排序，再过滤
+  // 仅过滤，不重新排序（保持后端返回的手动排序顺序）
   const sortedTools = useMemo(() => {
-    let tools = [...(category.tools || [])].sort((a, b) => {
-      const scoreA = (a.upvotes || 0) - (a.downvotes || 0)
-      const scoreB = (b.upvotes || 0) - (b.downvotes || 0)
-      return scoreB - scoreA
-    })
+    let tools = [...(category.tools || [])]
 
     if (selectedTagId) {
       tools = tools.filter(tool => {
