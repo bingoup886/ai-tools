@@ -1,18 +1,6 @@
-export const Header = ({isEditMode, onToggleMode, onOpenSortModal, onLogoClick, showAdminHint}) => {
+export const Header = ({isEditMode, onToggleMode, onOpenSortModal}) => {
 	return (
-		<div className="header">
-			<h1
-				className="logo-clickable"
-				onClick={onLogoClick}
-				title="点击Logo进入管理员模式"
-			>
-				🚀 Geek工具导航站
-			</h1>
-			{showAdminHint && (
-				<div className="admin-hint">
-					✨ 管理员模式已激活！
-				</div>
-			)}
+		<div className="header" style={{ justifyContent: 'flex-end' }}>
 			<div className="header-actions">
 				{isEditMode && (
 					<>

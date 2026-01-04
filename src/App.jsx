@@ -227,13 +227,14 @@ function App() {
 
 	return (
 		<div>
-			<Banner />
+			<Banner
+				onLogoClick={handleLogoClick}
+				showAdminHint={showAdminHint}
+			/>
 			<Header
 				isEditMode={isEditMode}
 				onToggleMode={handleToggleMode}
 				onOpenSortModal={() => setShowCategorySortModal(true)}
-				onLogoClick={handleLogoClick}
-				showAdminHint={showAdminHint}
 			/>
 
 			<div className="container">
